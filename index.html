@@ -68,36 +68,41 @@
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col justify-between">
 
-    <!-- TOP NAVBAR EXCELLINGTON -->
+    <!-- TOP NAVBAR EXCELLINGTON (AJUSTADO PARA NÃO CORTAR) -->
     <header class="bg-emerald-700 text-white shadow-md sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="bg-white p-2 rounded-lg text-emerald-700 shadow-sm">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-2">
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-2.5 min-w-0">
+                <div class="bg-white p-2 rounded-lg text-emerald-700 shadow-sm shrink-0">
                     <i class="fa-solid font-bold fa-heart-pulse text-xl"></i>
                 </div>
-                <div>
-                    <h1 class="font-bold text-lg leading-tight">Cuidador Excellington</h1>
-                    <p class="text-xs text-emerald-200">Gestão de Medicamentos & Saúde</p>
+                <div class="min-w-0">
+                    <h1 class="font-bold text-base sm:text-lg leading-tight truncate">Cuidador Excellington</h1>
+                    <div class="flex items-center gap-1.5 text-xs text-emerald-100 flex-wrap">
+                        <span class="truncate">Gestão de Medicamentos</span>
+                        <span class="hidden md:inline">•</span>
+                        <span class="bg-emerald-800/80 px-2 py-0.5 rounded text-[11px] font-medium border border-emerald-600/40 truncate max-w-[180px]">
+                            <i class="fa-solid fa-user-circle mr-1 text-emerald-300"></i><span id="userNameDisplay">Carregando...</span>
+                        </span>
+                        <button onclick="openAuthModal(true)" class="text-emerald-200 hover:text-white underline text-[10px] font-semibold transition">
+                            Editar
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- User Info & License Status -->
-            <div class="flex items-center space-x-3">
-                <div id="licenseBadge" class="hidden md:flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-800 text-emerald-100 border border-emerald-600 cursor-pointer" onclick="openLicenseModal()">
+            <!-- Right Actions (License & Close) -->
+            <div class="flex items-center space-x-2 shrink-0">
+                <div id="licenseBadge" class="hidden lg:flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-800 text-emerald-100 border border-emerald-600 cursor-pointer" onclick="openLicenseModal()">
                     <i class="fa-solid fa-key mr-1.5 text-amber-300"></i>
                     <span id="licenseStatusText">Licença Ativa</span>
                 </div>
 
-                <div id="userBadge" class="flex items-center space-x-2 text-xs bg-emerald-800/80 px-3 py-1.5 rounded-xl border border-emerald-600/60 shadow-inner">
-                    <i class="fa-solid fa-user-circle text-emerald-300 text-sm"></i>
-                    <span class="text-emerald-200 hidden sm:inline">Cuidador:</span>
-                    <span id="userNameDisplay" class="font-bold text-white max-w-[120px] sm:max-w-[160px] truncate">Carregando...</span>
-                    <button onclick="openAuthModal(true)" class="text-emerald-200 hover:text-white underline text-[11px] ml-1 font-medium transition">
-                        Editar
-                    </button>
-                </div>
+                <button onclick="openLicenseModal()" title="Licença" class="md:hidden bg-emerald-800 hover:bg-emerald-900 text-amber-300 p-2 rounded-lg transition text-xs border border-emerald-600">
+                    <i class="fa-solid fa-key"></i>
+                </button>
 
-                <button onclick="confirmCloseApp()" title="Fechar Aplicativo" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition-colors flex items-center space-x-1 shadow">
+                <button onclick="confirmCloseApp()" title="Fechar Aplicativo" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors flex items-center space-x-1 shadow">
                     <i class="fa-solid fa-power-off"></i>
                     <span class="hidden sm:inline">Fechar</span>
                 </button>
@@ -251,7 +256,7 @@
 
     <!-- ================= MODALS ================= -->
 
-    <!-- 1. AUTH / USER REGISTRATION MODAL (PADRÃO EXCELLINGTON) -->
+    <!-- 1. AUTH / USER REGISTRATION MODAL -->
     <div id="authModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-emerald-100">
             <div class="flex items-center gap-3 border-b border-slate-100 pb-3 mb-4">
