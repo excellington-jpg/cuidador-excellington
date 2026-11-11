@@ -1,0 +1,1153 @@
+﻿```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuidador Excellington - Gestão de Medicamentos</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        emerald: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        sage: {
+                            50: '#f4f7f4',
+                            100: '#e3ebe3',
+                            200: '#c7d7c7',
+                            500: '#6b8e6b',
+                            700: '#3e583e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f8f5;
+        }
+        .pulse-alarm {
+            animation: pulse-red 1s infinite alternate;
+        }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            100% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #a7f3d0;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #34d399;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- TOP NAVBAR EXCELLINGTON -->
+    <header class="bg-emerald-700 text-white shadow-md sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white p-2 rounded-lg text-emerald-700 shadow-sm">
+                    <i class="fa-solid font-bold fa-heart-pulse text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">Cuidador Excellington</h1>
+                    <p class="text-xs text-emerald-200">Gestão de Medicamentos & Saúde</p>
+                </div>
+            </div>
+
+            <!-- User Info & License Status -->
+            <div class="flex items-center space-x-3">
+                <div id="licenseBadge" class="hidden md:flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-800 text-emerald-100 border border-emerald-600 cursor-pointer" onclick="openLicenseModal()">
+                    <i class="fa-solid fa-key mr-1.5 text-amber-300"></i>
+                    <span id="licenseStatusText">Licença Ativa</span>
+                </div>
+
+                <div id="userBadge" class="hidden sm:flex items-center space-x-2 text-sm bg-emerald-800/60 px-3 py-1 rounded-lg border border-emerald-600/50">
+                    <i class="fa-solid fa-user-circle text-emerald-300"></i>
+                    <span id="userNameDisplay" class="font-medium">Carregando...</span>
+                </div>
+
+                <button onclick="confirmCloseApp()" title="Fechar Aplicativo" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition-colors flex items-center space-x-1 shadow">
+                    <i class="fa-solid fa-power-off"></i>
+                    <span class="hidden sm:inline">Fechar</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN APP WRAPPER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+        <!-- Background Mode Banner / Alarm Test -->
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-emerald-100 p-2.5 rounded-full text-emerald-700">
+                    <i class="fa-solid fa-bell text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-emerald-900">Monitoramento Ativo em 2º Plano</h3>
+                    <p class="text-xs text-emerald-700">Ative as notificações para receber alertas sonoros e visuais mesmo com a tela minimizada.</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2 w-full md:w-auto justify-end">
+                <button onclick="requestNotificationPermission()" id="btnNotify" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg font-medium transition shadow-sm flex items-center space-x-1">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Ativar Notificações</span>
+                </button>
+                <button onclick="triggerTestAlarm()" class="text-xs bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg font-medium transition shadow-sm flex items-center space-x-1">
+                    <i class="fa-solid fa-volume-high"></i>
+                    <span>Testar Alarme</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- MAIN DASHBOARD CONTENT -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- LEFT SIDEBAR: Patient List & Form -->
+            <div class="lg:col-span-4 space-y-6">
+                <!-- Patients Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-5">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="font-bold text-slate-800 text-md flex items-center gap-2">
+                            <i class="fa-solid fa-hospital-user text-emerald-600"></i>
+                            Pacientes
+                        </h2>
+                        <button onclick="openPatientModal()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1">
+                            <i class="fa-solid fa-plus"></i> Novo
+                        </button>
+                    </div>
+
+                    <!-- Filter / Patient Selection List -->
+                    <div id="patientsList" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                        <!-- Patient Cards inserted here dynamically -->
+                    </div>
+                </div>
+
+                <!-- Fast Actions & Stats -->
+                <div class="bg-gradient-to-br from-emerald-600 to-emerald-800 text-white rounded-2xl p-5 shadow-sm">
+                    <h3 class="text-xs uppercase tracking-wider text-emerald-200 font-semibold mb-3">Resumo do Dia</h3>
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div class="bg-white/10 backdrop-blur rounded-xl p-3">
+                            <span id="statPending" class="block text-2xl font-bold">0</span>
+                            <span class="text-xs text-emerald-100">Pendentes</span>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur rounded-xl p-3">
+                            <span id="statTaken" class="block text-2xl font-bold">0</span>
+                            <span class="text-xs text-emerald-100">Consumidos</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT MAIN AREA: Medication Schedules & Tracking -->
+            <div class="lg:col-span-8 space-y-6">
+                
+                <!-- Active Patient Header / Action Bar -->
+                <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <span class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Paciente Selecionado</span>
+                        <h2 id="activePatientName" class="text-xl font-bold text-slate-800">Todos os Pacientes</h2>
+                        <p id="activePatientMeta" class="text-xs text-slate-500">Exibindo cronograma geral de medicações</p>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <button onclick="openMedicationModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-pills text-sm"></i> Cadastrar Medicamento
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Schedule Checklist for Today -->
+                <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-5">
+                    <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-md flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-check text-emerald-600"></i>
+                                Horários de Hoje (<span id="currentDayText"></span>)
+                            </h3>
+                        </div>
+                        <span id="currentClock" class="text-xs font-mono bg-slate-100 px-2.5 py-1 rounded-md text-slate-600 font-semibold">00:00:00</span>
+                    </div>
+
+                    <!-- Daily Checklist Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="text-xs text-slate-400 border-b border-slate-100 font-semibold uppercase">
+                                    <th class="py-2.5 px-3">Horário</th>
+                                    <th class="py-2.5 px-3">Paciente</th>
+                                    <th class="py-2.5 px-3">Medicamento / Dose</th>
+                                    <th class="py-2.5 px-3 text-center">Status</th>
+                                    <th class="py-2.5 px-3 text-right">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="todayScheduleTable" class="divide-y divide-slate-50 text-sm">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                        <div id="emptyScheduleState" class="hidden text-center py-8 text-slate-400">
+                            <i class="fa-solid fa-capsules text-3xl mb-2 text-slate-300"></i>
+                            <p class="text-xs">Nenhum medicamento agendado para o dia de hoje.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Master Registered Medications List -->
+                <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-5">
+                    <h3 class="font-bold text-slate-800 text-md mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-emerald-600"></i>
+                        Medicamentos Cadastrados
+                    </h3>
+                    <div id="medicationsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Dynamic Medication Cards -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <p>© Excellington Software - Todos os direitos reservados.</p>
+            <div class="flex space-x-4">
+                <a href="#" onclick="openTermsModal(); return false;" class="text-emerald-700 hover:underline">Termos de Uso</a>
+                <a href="#" onclick="openLicenseModal(); return false;" class="text-emerald-700 hover:underline">Licença & Ativação</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- 1. AUTH / USER REGISTRATION MODAL -->
+    <div id="authModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-emerald-100">
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto mb-2 text-xl font-bold">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+                <h2 class="text-xl font-bold text-slate-800">Boas-vindas ao Cuidador</h2>
+                <p class="text-xs text-slate-500 mt-1">Identifique-se para acessar o sistema Excellington</p>
+            </div>
+            <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nome Completo / Responsável</label>
+                    <input type="text" id="authName" required class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Ex: Dr. Carlos Silva">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">E-mail de Contato</label>
+                    <input type="email" id="authEmail" required class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="carlos@email.com">
+                </div>
+                <div class="pt-2">
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition text-sm shadow">
+                        Continuar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. TERMS OF USE MODAL -->
+    <div id="termsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-emerald-100 flex flex-col max-h-[85vh]">
+            <div class="flex items-center space-x-3 mb-4 text-emerald-800">
+                <i class="fa-solid fa-file-contract text-2xl"></i>
+                <h2 class="text-lg font-bold">Termos de Uso e Responsabilidade</h2>
+            </div>
+            <div class="overflow-y-auto text-xs text-slate-600 space-y-3 pr-2 mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <p class="font-semibold text-slate-700">Aviso Legal Importante:</p>
+                <p>1. O aplicativo <strong>Cuidador Excellington</strong> é uma ferramenta de auxílio pessoal para organização e lembrete de horários de medicações.</p>
+                <p>2. Este software NÃO substitui o acompanhamento médico profissional, nem a orientação de farmacêuticos ou profissionais de enfermagem.</p>
+                <p>3. A responsabilidade pela inserção correta das dosagens, nomes dos remédios e horários é inteiramente do usuário cadastrado.</p>
+                <p>4. Os desenvolvedores e a marca Excellington não se responsabilizam por falhas na administração de medicamentos decorrentes de dispositivos desligados, sem bateria ou sem áudio ativado.</p>
+            </div>
+            <div class="flex items-center space-x-2 mb-4">
+                <input type="checkbox" id="acceptTermsCheck" class="rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4">
+                <label for="acceptTermsCheck" class="text-xs font-medium text-slate-700">Li e concordo com os termos de responsabilidade.</label>
+            </div>
+            <button onclick="confirmTerms()" id="btnAcceptTerms" disabled class="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-bold py-2.5 rounded-xl transition text-sm shadow">
+                Aceitar e Prosseguir
+            </button>
+        </div>
+    </div>
+
+    <!-- 3. LICENSE ACTIVATION / RENEWAL MODAL -->
+    <div id="licenseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-emerald-100">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-key text-amber-500"></i> Ativação / Renovação
+                </h2>
+                <button onclick="closeLicenseModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 mb-4 text-xs text-emerald-800">
+                <p class="font-semibold">Status Atual: <span id="modalLicenseStatus">Licença Ativa</span></p>
+                <p class="text-emerald-600 mt-0.5" id="modalLicenseDetail">Validade Vitalícia de Testes Excellington</p>
+            </div>
+            <form onsubmit="handleLicenseSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Chave de Licença (Serial)</label>
+                    <input type="text" id="licenseKeyInput" required class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm font-mono uppercase focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="EXCEL-XXXX-YYYY-ZZZZ">
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition text-sm shadow">
+                    Validar Chave
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. PATIENT FORM MODAL -->
+    <div id="patientModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-emerald-100">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-slate-800" id="patientModalTitle">Cadastrar Paciente</h2>
+                <button onclick="closePatientModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="patientForm" onsubmit="savePatient(event)" class="space-y-4">
+                <input type="hidden" id="patientId">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nome do Paciente</label>
+                    <input type="text" id="patientName" required class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Ex: Maria Oliveira">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Idade</label>
+                        <input type="number" id="patientAge" min="0" max="130" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="75">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Quarto / Leito / Obs</label>
+                        <input type="text" id="patientRoom" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Quarto 202">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Observações Médicas Gerais</label>
+                    <textarea id="patientNotes" rows="2" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Alergias, restrições alimentares..."></textarea>
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closePatientModal()" class="px-4 py-2 border border-slate-300 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow">Salvar Paciente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 5. MEDICATION FORM MODAL -->
+    <div id="medicationModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-emerald-100 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-slate-800" id="medModalTitle">Cadastrar Medicamento</h2>
+                <button onclick="closeMedicationModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="medicationForm" onsubmit="saveMedication(event)" class="space-y-4">
+                <input type="hidden" id="medId">
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Paciente Pertencente</label>
+                    <select id="medPatientId" required class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nome do Remédio</label>
+                        <input type="text" id="medName" required class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Ex: Losartana">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Dose / Quantidade</label>
+                        <input type="text" id="medDosage" required class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Ex: 1 Comprimido, 5ml">
+                    </div>
+                </div>
+
+                <!-- Days of the week selection -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Dias da Semana</label>
+                    <div class="grid grid-cols-7 gap-1 text-center" id="daysContainer">
+                        <label class="cursor-pointer">
+                            <input type="checkbox" value="0" class="peer hidden day-check" checked>
+                            <span class="block text-xs py-2 border border-slate-200 rounded-lg peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 font-semibold transition">Dom</span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" value="1" class="peer hidden day-check" checked>
+                            <span class="block text-xs py-2 border border-slate-200 rounded-lg peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 font-semibold transition">Seg</span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" value="2" class="peer hidden day-check" checked>
+                            <span class="block text-xs py-2 border border-slate-200 rounded-lg peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 font-semibold transition">Ter</span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" value="3" class="peer hidden day-check" checked>
+                            <span class="block text-xs py-2 border border-slate-200 rounded-lg peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 font-semibold transition">Qua</span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" value="4" class="peer hidden day-check" checked>
+                            <span class="block text-xs py-2 border border-slate-200 rounded-lg peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 font-semibold transition">Qui</span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" value="5" class="peer hidden day-check" checked>
+                            <span class="block text-xs py-2 border border-slate-200 rounded-lg peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 font-semibold transition">Sex</span>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" value="6" class="peer hidden day-check" checked>
+                            <span class="block text-xs py-2 border border-slate-200 rounded-lg peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 font-semibold transition">Sáb</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Times Setup -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-semibold text-slate-700">Horários de Tomada</label>
+                        <button type="button" onclick="addTimeInput()" class="text-xs text-emerald-700 hover:underline font-semibold">+ Adicionar Horário</button>
+                    </div>
+                    <div id="timesContainer" class="space-y-2 max-h-36 overflow-y-auto pr-1">
+                        <!-- Dynamic time inputs -->
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeMedicationModal()" class="px-4 py-2 border border-slate-300 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow">Salvar Medicamento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 6. ALARM TRIGGER POPUP MODAL -->
+    <div id="alarmPopupModal" class="fixed inset-0 bg-rose-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border-4 border-rose-500 text-center pulse-alarm relative">
+            <div class="w-20 h-20 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl animate-bounce">
+                <i class="fa-solid fa-bell font-bold"></i>
+            </div>
+
+            <span class="inline-block bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
+                HORA DA MEDICAÇÃO!
+            </span>
+
+            <h2 id="alarmPatientName" class="text-2xl font-black text-slate-800">Nome do Paciente</h2>
+            <p id="alarmMedName" class="text-lg font-bold text-emerald-700 mt-1">Nome do Remédio</p>
+            <p id="alarmDosage" class="text-sm text-slate-500 font-medium mb-6">Dose: 1 comprimido</p>
+
+            <div class="space-y-3">
+                <button onclick="confirmMedicationConsumptionFromAlarm()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 rounded-2xl transition text-base shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-check text-xl"></i> Marcar como CONSUMIDO
+                </button>
+                <button onclick="dismissAlarm()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2.5 rounded-xl transition text-xs">
+                    Adiar / Silenciar Alarme
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // APP STATE & STORAGE KEYS
+        const STORAGE_KEY_USER = 'excellington_cuidador_user';
+        const STORAGE_KEY_TERMS = 'excellington_cuidador_terms';
+        const STORAGE_KEY_LICENSE = 'excellington_cuidador_license';
+        const STORAGE_KEY_PATIENTS = 'excellington_cuidador_patients';
+        const STORAGE_KEY_MEDS = 'excellington_cuidador_meds';
+        const STORAGE_KEY_LOGS = 'excellington_cuidador_logs';
+
+        let appState = {
+            user: null,
+            termsAccepted: false,
+            license: { active: true, key: 'EXCEL-FREE-2026' },
+            patients: [],
+            medications: [],
+            logs: [], // { date: 'YYYY-MM-DD', medId, time, consumed: true/false }
+            selectedPatientId: 'ALL',
+            currentAlarmTarget: null // { medId, time, patientName, medName, dosage }
+        };
+
+        // AUDIO SYNTHESIZER FOR ALARM (Web Audio API)
+        let audioCtx = null;
+        let alarmInterval = null;
+
+        function playAlarmSound() {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                function chime() {
+                    if (audioCtx.state === 'suspended') {
+                        audioCtx.resume();
+                    }
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(880, audioCtx.currentTime); // Note A5
+                    osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.3);
+
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                }
+
+                chime();
+                if (!alarmInterval) {
+                    alarmInterval = setInterval(chime, 800);
+                }
+            } catch (e) {
+                console.error("Audio error:", e);
+            }
+        }
+
+        function stopAlarmSound() {
+            if (alarmInterval) {
+                clearInterval(alarmInterval);
+                alarmInterval = null;
+            }
+        }
+
+        // INITIALIZATION
+        window.onload = function () {
+            loadDataFromStorage();
+            checkStandardModals();
+            renderAll();
+            startClockAndAlarmEngine();
+        };
+
+        function loadDataFromStorage() {
+            appState.user = JSON.parse(localStorage.getItem(STORAGE_KEY_USER)) || null;
+            appState.termsAccepted = JSON.parse(localStorage.getItem(STORAGE_KEY_TERMS)) || false;
+            appState.license = JSON.parse(localStorage.getItem(STORAGE_KEY_LICENSE)) || { active: true, key: 'EXCEL-DEFAULT-2026' };
+            appState.patients = JSON.parse(localStorage.getItem(STORAGE_KEY_PATIENTS)) || [
+                { id: '1', name: 'Dona Maria Oliveira', age: 78, room: 'Quarto 101', notes: 'Hipertensa e Diabética' }
+            ];
+            appState.medications = JSON.parse(localStorage.getItem(STORAGE_KEY_MEDS)) || [
+                { id: 'm1', patientId: '1', name: 'Losartana 50mg', dosage: '1 comprimido', days: [0,1,2,3,4,5,6], times: ['08:00', '20:00'] }
+            ];
+            appState.logs = JSON.parse(localStorage.getItem(STORAGE_KEY_LOGS)) || [];
+        }
+
+        function saveDataToStorage() {
+            localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(appState.user));
+            localStorage.setItem(STORAGE_KEY_TERMS, JSON.stringify(appState.termsAccepted));
+            localStorage.setItem(STORAGE_KEY_LICENSE, JSON.stringify(appState.license));
+            localStorage.setItem(STORAGE_KEY_PATIENTS, JSON.stringify(appState.patients));
+            localStorage.setItem(STORAGE_KEY_MEDS, JSON.stringify(appState.medications));
+            localStorage.setItem(STORAGE_KEY_LOGS, JSON.stringify(appState.logs));
+        }
+
+        // EXCELINGTON STANDARD MODAL CHECKS
+        function checkStandardModals() {
+            // Check Auth
+            if (!appState.user) {
+                document.getElementById('authModal').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('authModal').classList.add('hidden');
+            document.getElementById('userNameDisplay').textContent = appState.user.name;
+
+            // Check Terms
+            if (!appState.termsAccepted) {
+                document.getElementById('termsModal').classList.remove('hidden');
+                const checkbox = document.getElementById('acceptTermsCheck');
+                const btn = document.getElementById('btnAcceptTerms');
+                checkbox.onchange = function() {
+                    btn.disabled = !this.checked;
+                };
+                return;
+            }
+            document.getElementById('termsModal').classList.add('hidden');
+
+            // License UI
+            updateLicenseUI();
+        }
+
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('authName').value.trim();
+            const email = document.getElementById('authEmail').value.trim();
+            if (name && email) {
+                appState.user = { name, email };
+                saveDataToStorage();
+                checkStandardModals();
+            }
+        }
+
+        function confirmTerms() {
+            appState.termsAccepted = true;
+            saveDataToStorage();
+            checkStandardModals();
+        }
+
+        function updateLicenseUI() {
+            const statusTxt = document.getElementById('licenseStatusText');
+            const modalStatus = document.getElementById('modalLicenseStatus');
+            if (appState.license.active) {
+                statusTxt.textContent = "Licença Ativa";
+                modalStatus.textContent = "Licença Ativa";
+            } else {
+                statusTxt.textContent = "Licença Expirada";
+                modalStatus.textContent = "Licença Inativa";
+            }
+        }
+
+        function openLicenseModal() {
+            document.getElementById('licenseModal').classList.remove('hidden');
+        }
+
+        function closeLicenseModal() {
+            document.getElementById('licenseModal').classList.add('hidden');
+        }
+
+        function handleLicenseSubmit(e) {
+            e.preventDefault();
+            const key = document.getElementById('licenseKeyInput').value.trim();
+            if (key) {
+                appState.license = { active: true, key: key };
+                saveDataToStorage();
+                updateLicenseUI();
+                closeLicenseModal();
+                alert('Licença ativada com sucesso!');
+            }
+        }
+
+        function confirmCloseApp() {
+            if (confirm("Deseja realmente fechar o aplicativo Cuidador Excellington?")) {
+                document.body.innerHTML = `
+                    <div class="min-h-screen flex flex-col items-center justify-center bg-slate-900 text-white p-6 text-center">
+                        <div class="w-16 h-16 bg-emerald-600 rounded-full flex items-center justify-center text-3xl mb-4">
+                            <i class="fa-solid fa-power-off"></i>
+                        </div>
+                        <h1 class="text-2xl font-bold mb-2">Aplicativo Encerrado</h1>
+                        <p class="text-slate-400 text-sm max-w-sm">O sistema Cuidador Excellington foi desligado com segurança. Você pode fechar esta aba.</p>
+                    </div>
+                `;
+                window.close();
+            }
+        }
+
+        function openTermsModal() {
+            document.getElementById('termsModal').classList.remove('hidden');
+        }
+
+        // PATIENTS MANAGEMENT
+        function openPatientModal(patientId = null) {
+            const form = document.getElementById('patientForm');
+            form.reset();
+            if (patientId) {
+                const patient = appState.patients.find(p => p.id === patientId);
+                if (patient) {
+                    document.getElementById('patientId').value = patient.id;
+                    document.getElementById('patientName').value = patient.name;
+                    document.getElementById('patientAge').value = patient.age || '';
+                    document.getElementById('patientRoom').value = patient.room || '';
+                    document.getElementById('patientNotes').value = patient.notes || '';
+                    document.getElementById('patientModalTitle').textContent = "Editar Paciente";
+                }
+            } else {
+                document.getElementById('patientId').value = '';
+                document.getElementById('patientModalTitle').textContent = "Cadastrar Paciente";
+            }
+            document.getElementById('patientModal').classList.remove('hidden');
+        }
+
+        function closePatientModal() {
+            document.getElementById('patientModal').classList.add('hidden');
+        }
+
+        function savePatient(e) {
+            e.preventDefault();
+            const id = document.getElementById('patientId').value || 'p_' + Date.now();
+            const name = document.getElementById('patientName').value.trim();
+            const age = document.getElementById('patientAge').value;
+            const room = document.getElementById('patientRoom').value.trim();
+            const notes = document.getElementById('patientNotes').value.trim();
+
+            const existingIndex = appState.patients.findIndex(p => p.id === id);
+            const patientData = { id, name, age, room, notes };
+
+            if (existingIndex >= 0) {
+                appState.patients[existingIndex] = patientData;
+            } else {
+                appState.patients.push(patientData);
+            }
+
+            saveDataToStorage();
+            closePatientModal();
+            renderAll();
+        }
+
+        function deletePatient(patientId) {
+            if (confirm("Tem certeza que deseja excluir este paciente e todas as suas medicações?")) {
+                appState.patients = appState.patients.filter(p => p.id !== patientId);
+                appState.medications = appState.medications.filter(m => m.patientId !== patientId);
+                if (appState.selectedPatientId === patientId) {
+                    appState.selectedPatientId = 'ALL';
+                }
+                saveDataToStorage();
+                renderAll();
+            }
+        }
+
+        function selectPatient(patientId) {
+            appState.selectedPatientId = patientId;
+            renderAll();
+        }
+
+        // MEDICATION MANAGEMENT
+        function openMedicationModal(medId = null) {
+            if (appState.patients.length === 0) {
+                alert('Cadastre pelo menos um paciente antes de adicionar medicações.');
+                openPatientModal();
+                return;
+            }
+
+            const form = document.getElementById('medicationForm');
+            form.reset();
+            const patientSelect = document.getElementById('medPatientId');
+            patientSelect.innerHTML = appState.patients.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+
+            const timesContainer = document.getElementById('timesContainer');
+            timesContainer.innerHTML = '';
+
+            if (medId) {
+                const med = appState.medications.find(m => m.id === medId);
+                if (med) {
+                    document.getElementById('medId').value = med.id;
+                    document.getElementById('medPatientId').value = med.patientId;
+                    document.getElementById('medName').value = med.name;
+                    document.getElementById('medDosage').value = med.dosage;
+
+                    // Days
+                    const dayCheckboxes = document.querySelectorAll('.day-check');
+                    dayCheckboxes.forEach(cb => {
+                        cb.checked = med.days.includes(parseInt(cb.value));
+                    });
+
+                    // Times
+                    med.times.forEach(t => addTimeInput(t));
+                    document.getElementById('medModalTitle').textContent = "Editar Medicamento";
+                }
+            } else {
+                document.getElementById('medId').value = '';
+                if (appState.selectedPatientId !== 'ALL') {
+                    patientSelect.value = appState.selectedPatientId;
+                }
+                addTimeInput('08:00');
+                document.getElementById('medModalTitle').textContent = "Cadastrar Medicamento";
+            }
+
+            document.getElementById('medicationModal').classList.remove('hidden');
+        }
+
+        function closeMedicationModal() {
+            document.getElementById('medicationModal').classList.add('hidden');
+        }
+
+        function addTimeInput(value = '12:00') {
+            const container = document.getElementById('timesContainer');
+            const div = document.createElement('div');
+            div.className = 'flex items-center space-x-2';
+            div.innerHTML = `
+                <input type="time" required value="${value}" class="med-time-input px-3 py-1.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none flex-grow">
+                <button type="button" onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700 p-1.5"><i class="fa-solid fa-trash-can"></i></button>
+            `;
+            container.appendChild(div);
+        }
+
+        function saveMedication(e) {
+            e.preventDefault();
+            const id = document.getElementById('medId').value || 'm_' + Date.now();
+            const patientId = document.getElementById('medPatientId').value;
+            const name = document.getElementById('medName').value.trim();
+            const dosage = document.getElementById('medDosage').value.trim();
+
+            const dayCheckboxes = document.querySelectorAll('.day-check:checked');
+            const days = Array.from(dayCheckboxes).map(cb => parseInt(cb.value));
+
+            const timeInputs = document.querySelectorAll('.med-time-input');
+            const times = Array.from(timeInputs).map(i => i.value).sort();
+
+            if (days.length === 0) {
+                alert('Selecione ao menos um dia da semana.');
+                return;
+            }
+            if (times.length === 0) {
+                alert('Adicione ao menos um horário de medicação.');
+                return;
+            }
+
+            const medData = { id, patientId, name, dosage, days, times };
+            const existingIndex = appState.medications.findIndex(m => m.id === id);
+
+            if (existingIndex >= 0) {
+                appState.medications[existingIndex] = medData;
+            } else {
+                appState.medications.push(medData);
+            }
+
+            saveDataToStorage();
+            closeMedicationModal();
+            renderAll();
+        }
+
+        function deleteMedication(medId) {
+            if (confirm("Deseja excluir este medicamento?")) {
+                appState.medications = appState.medications.filter(m => m.id !== medId);
+                saveDataToStorage();
+                renderAll();
+            }
+        }
+
+        // RENDERING VIEWS
+        function renderAll() {
+            renderPatientsList();
+            renderActivePatientHeader();
+            renderTodaySchedule();
+            renderMedicationsCards();
+        }
+
+        function renderPatientsList() {
+            const container = document.getElementById('patientsList');
+            let html = `
+                <div onclick="selectPatient('ALL')" class="p-3 rounded-xl border cursor-pointer transition flex items-center justify-between ${appState.selectedPatientId === 'ALL' ? 'bg-emerald-50 border-emerald-500 text-emerald-900 font-bold' : 'border-slate-100 hover:bg-slate-50 text-slate-700'}">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-users text-emerald-600"></i>
+                        <span class="text-xs">Todos os Pacientes</span>
+                    </div>
+                    <span class="text-xs bg-slate-200 px-2 py-0.5 rounded-full text-slate-600">${appState.patients.length}</span>
+                </div>
+            `;
+
+            appState.patients.forEach(p => {
+                const medCount = appState.medications.filter(m => m.patientId === p.id).length;
+                const isSelected = appState.selectedPatientId === p.id;
+                html += `
+                    <div onclick="selectPatient('${p.id}')" class="p-3 rounded-xl border cursor-pointer transition flex items-center justify-between ${isSelected ? 'bg-emerald-50 border-emerald-500 text-emerald-900 font-bold' : 'border-slate-100 hover:bg-slate-50 text-slate-700'}">
+                        <div>
+                            <p class="text-xs font-semibold">${p.name}</p>
+                            <p class="text-[10px] text-slate-400">${p.room || 'Sem quarto'} • ${p.age ? p.age + ' anos' : ''}</p>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-semibold">${medCount} remédios</span>
+                            <button onclick="event.stopPropagation(); openPatientModal('${p.id}')" class="text-slate-400 hover:text-emerald-600 p-1 text-xs"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="event.stopPropagation(); deletePatient('${p.id}')" class="text-slate-400 hover:text-rose-600 p-1 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function renderActivePatientHeader() {
+            const nameEl = document.getElementById('activePatientName');
+            const metaEl = document.getElementById('activePatientMeta');
+
+            if (appState.selectedPatientId === 'ALL') {
+                nameEl.textContent = "Todos os Pacientes";
+                metaEl.textContent = "Exibindo cronograma geral de medicações para todos os cadastrados";
+            } else {
+                const patient = appState.patients.find(p => p.id === appState.selectedPatientId);
+                if (patient) {
+                    nameEl.textContent = patient.name;
+                    metaEl.textContent = `${patient.room ? patient.room + ' • ' : ''}${patient.age ? patient.age + ' anos' : ''} ${patient.notes ? ' • Obs: ' + patient.notes : ''}`;
+                }
+            }
+        }
+
+        const daysMap = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+
+        function renderTodaySchedule() {
+            const now = new Date();
+            const todayDayNum = now.getDay();
+            const todayStr = now.toISOString().split('T')[0];
+            document.getElementById('currentDayText').textContent = daysMap[todayDayNum];
+
+            const tbody = document.getElementById('todayScheduleTable');
+            const emptyState = document.getElementById('emptyScheduleState');
+
+            // Gather all items for today
+            let items = [];
+
+            appState.medications.forEach(med => {
+                // Filter by selected patient
+                if (appState.selectedPatientId !== 'ALL' && med.patientId !== appState.selectedPatientId) return;
+
+                // Filter by day of week
+                if (med.days.includes(todayDayNum)) {
+                    const patient = appState.patients.find(p => p.id === med.patientId);
+                    med.times.forEach(time => {
+                        // check status in logs
+                        const isTaken = appState.logs.some(l => l.date === todayStr && l.medId === med.id && l.time === time && l.consumed);
+                        items.push({
+                            medId: med.id,
+                            patientName: patient ? patient.name : 'Desconhecido',
+                            medName: med.name,
+                            dosage: med.dosage,
+                            time: time,
+                            consumed: isTaken
+                        });
+                    });
+                }
+            });
+
+            // Sort by time
+            items.sort((a, b) => a.time.localeCompare(b.time));
+
+            // Stats calculation
+            const pendingCount = items.filter(i => !i.consumed).length;
+            const takenCount = items.filter(i => i.consumed).length;
+            document.getElementById('statPending').textContent = pendingCount;
+            document.getElementById('statTaken').textContent = takenCount;
+
+            if (items.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            let html = '';
+
+            items.forEach(item => {
+                const statusBadge = item.consumed 
+                    ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800"><i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i> Consumido</span>`
+                    : `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800"><i class="fa-solid fa-clock mr-1 text-amber-600"></i> Pendente</span>`;
+
+                const btnAction = item.consumed
+                    ? `<button onclick="toggleMedicationStatus('${item.medId}', '${item.time}', false)" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-lg transition font-medium">Desfazer</button>`
+                    : `<button onclick="toggleMedicationStatus('${item.medId}', '${item.time}', true)" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded-lg transition font-medium shadow-sm flex items-center gap-1"><i class="fa-solid fa-check"></i> Tomar</button>`;
+
+                html += `
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="py-3 px-3 font-mono font-bold text-slate-700">${item.time}</td>
+                        <td class="py-3 px-3 font-medium text-slate-800">${item.patientName}</td>
+                        <td class="py-3 px-3">
+                            <span class="font-semibold text-slate-700">${item.medName}</span>
+                            <span class="text-xs text-slate-400 block">${item.dosage}</span>
+                        </td>
+                        <td class="py-3 px-3 text-center">${statusBadge}</td>
+                        <td class="py-3 px-3 text-right">${btnAction}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function renderMedicationsCards() {
+            const container = document.getElementById('medicationsList');
+            const dayLabels = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+
+            let filteredMeds = appState.medications;
+            if (appState.selectedPatientId !== 'ALL') {
+                filteredMeds = appState.medications.filter(m => m.patientId === appState.selectedPatientId);
+            }
+
+            if (filteredMeds.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-6 text-slate-400 text-xs">
+                        Nenhum medicamento cadastrado.
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filteredMeds.forEach(m => {
+                const patient = appState.patients.find(p => p.id === m.patientId);
+                const daysBadges = dayLabels.map((lbl, idx) => {
+                    const active = m.days.includes(idx);
+                    return `<span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${active ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-300'}">${lbl}</span>`;
+                }).join('');
+
+                const timesBadges = m.times.map(t => `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-2 py-0.5 rounded-md font-mono">${t}</span>`).join(' ');
+
+                html += `
+                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:border-emerald-300 transition flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <span class="text-[10px] uppercase font-bold text-emerald-600 tracking-wider">${patient ? patient.name : 'Geral'}</span>
+                                    <h4 class="font-bold text-slate-800 text-sm">${m.name}</h4>
+                                </div>
+                                <div class="flex space-x-1">
+                                    <button onclick="openMedicationModal('${m.id}')" class="text-slate-400 hover:text-emerald-600 p-1 text-xs"><i class="fa-solid fa-pen"></i></button>
+                                    <button onclick="deleteMedication('${m.id}')" class="text-slate-400 hover:text-rose-600 p-1 text-xs"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-3"><i class="fa-solid fa-prescription-bottle-medical text-emerald-500 mr-1"></i> Dose: ${m.dosage}</p>
+                            
+                            <div class="mb-3">
+                                <span class="text-[10px] text-slate-400 block mb-1">Horários:</span>
+                                <div class="flex flex-wrap gap-1">${timesBadges}</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="text-[10px] text-slate-400 block mb-1">Dias ativos:</span>
+                            <div class="flex space-x-1">${daysBadges}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // STATUS TOGGLING & LOGS
+        function toggleMedicationStatus(medId, time, consumed) {
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            // Remove existing log entry if present
+            appState.logs = appState.logs.filter(l => !(l.date === todayStr && l.medId === medId && l.time === time));
+
+            if (consumed) {
+                appState.logs.push({
+                    date: todayStr,
+                    medId: medId,
+                    time: time,
+                    consumed: true,
+                    timestamp: new Date().toISOString()
+                });
+            }
+
+            saveDataToStorage();
+            renderTodaySchedule();
+        }
+
+        // BACKGROUND CLOCK & ALARM ENGINE
+        let firedAlarmsToday = new Set(); // Stores "YYYY-MM-DD_medId_time"
+
+        function startClockAndAlarmEngine() {
+            setInterval(() => {
+                const now = new Date();
+                const clockStr = now.toTimeString().split(' ')[0];
+                document.getElementById('currentClock').textContent = clockStr;
+
+                const currentHHMM = clockStr.substring(0, 5);
+                const todayStr = now.toISOString().split('T')[0];
+                const todayDayNum = now.getDay();
+
+                // Check alarms
+                appState.medications.forEach(med => {
+                    if (med.days.includes(todayDayNum)) {
+                        med.times.forEach(time => {
+                            if (time === currentHHMM) {
+                                const alarmKey = `${todayStr}_${med.id}_${time}`;
+                                const isTaken = appState.logs.some(l => l.date === todayStr && l.medId === med.id && l.time === time && l.consumed);
+
+                                if (!firedAlarmsToday.has(alarmKey) && !isTaken) {
+                                    firedAlarmsToday.add(alarmKey);
+                                    triggerAlarm(med, time);
+                                }
+                            }
+                        });
+                    }
+                });
+            }, 1000);
+        }
+
+        function triggerAlarm(med, time) {
+            const patient = appState.patients.find(p => p.id === med.patientId);
+            const patientName = patient ? patient.name : 'Paciente';
+
+            appState.currentAlarmTarget = {
+                medId: med.id,
+                time: time,
+                patientName: patientName,
+                medName: med.name,
+                dosage: med.dosage
+            };
+
+            // Play Sound
+            playAlarmSound();
+
+            // Show Popup Modal
+            document.getElementById('alarmPatientName').textContent = patientName;
+            document.getElementById('alarmMedName').textContent = med.name;
+            document.getElementById('alarmDosage').textContent = `Dose: ${med.dosage} (${time})`;
+            document.getElementById('alarmPopupModal').classList.remove('hidden');
+
+            // Send System Web Notification (Works in background)
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification(`HORA DA MEDICAÇÃO: ${patientName}`, {
+                    body: `${med.name} - ${med.dosage} às ${time}`,
+                    icon: 'https://cdn-icons-png.flaticon.com/512/3063/3063822.png',
+                    requireInteraction: true
+                });
+            }
+        }
+
+        function triggerTestAlarm() {
+            triggerAlarm({
+                id: 'test',
+                patientId: '1',
+                name: 'Remédio de Teste',
+                dosage: '1 Comprimido (Demonstração)',
+                days: [0,1,2,3,4,5,6],
+                times: ['00:00']
+            }, '12:00');
+        }
+
+        function dismissAlarm() {
+            stopAlarmSound();
+            document.getElementById('alarmPopupModal').classList.add('hidden');
+            appState.currentAlarmTarget = null;
+        }
+
+        function confirmMedicationConsumptionFromAlarm() {
+            if (appState.currentAlarmTarget && appState.currentAlarmTarget.medId !== 'test') {
+                toggleMedicationStatus(appState.currentAlarmTarget.medId, appState.currentAlarmTarget.time, true);
+            }
+            dismissAlarm();
+        }
+
+        function requestNotificationPermission() {
+            if ("Notification" in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        alert("Notificações em segundo plano ativadas com sucesso!");
+                    } else {
+                        alert("Permissão de notificação negada ou bloqueada no navegador.");
+                    }
+                });
+            } else {
+                alert("Seu navegador não suporta a API de Notificações.");
+            }
+        }
+    </script>
+</body>
+</html>
