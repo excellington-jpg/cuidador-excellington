@@ -88,9 +88,13 @@
                     <span id="licenseStatusText">Licença Ativa</span>
                 </div>
 
-                <div id="userBadge" class="hidden sm:flex items-center space-x-2 text-sm bg-emerald-800/60 px-3 py-1 rounded-lg border border-emerald-600/50 cursor-pointer" onclick="openAuthModal(true)">
-                    <i class="fa-solid fa-user-circle text-emerald-300"></i>
-                    <span id="userNameDisplay" class="font-medium">Carregando...</span>
+                <div id="userBadge" class="flex items-center space-x-2 text-xs bg-emerald-800/80 px-3 py-1.5 rounded-xl border border-emerald-600/60 shadow-inner">
+                    <i class="fa-solid fa-user-circle text-emerald-300 text-sm"></i>
+                    <span class="text-emerald-200 hidden sm:inline">Cuidador:</span>
+                    <span id="userNameDisplay" class="font-bold text-white max-w-[120px] sm:max-w-[160px] truncate">Carregando...</span>
+                    <button onclick="openAuthModal(true)" class="text-emerald-200 hover:text-white underline text-[11px] ml-1 font-medium transition">
+                        Editar
+                    </button>
                 </div>
 
                 <button onclick="confirmCloseApp()" title="Fechar Aplicativo" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg transition-colors flex items-center space-x-1 shadow">
@@ -265,10 +269,10 @@
                     <input type="text" id="authName" required class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Ex: Wellington Silva">
                 </div>
                 <div class="flex gap-2 pt-2">
-                    <button id="btnCancelAuth" type="button" onclick="closeAuthModal()" class="hidden w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition text-xs">
+                    <button id="btnCancelAuth" type="button" onclick="closeAuthModal()" class="hidden w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition text-xs cursor-pointer">
                         Cancelar
                     </button>
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition text-sm shadow">
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition text-sm shadow cursor-pointer">
                         Salvar e Continuar
                     </button>
                 </div>
@@ -300,7 +304,7 @@
         </div>
     </div>
 
-    <!-- 3. LICENSE ACTIVATION / RENEWAL MODAL (EXATO PADRÃO EXCELLINGTON COM PIX) -->
+    <!-- 3. LICENSE ACTIVATION / RENEWAL MODAL -->
     <div id="licenseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-emerald-100 relative space-y-4">
             <button onclick="closeLicenseModalIfValid()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
@@ -384,7 +388,7 @@
         </div>
     </div>
 
-    <!-- 5. MEDICATION FORM MODAL (COM OPÇÃO DE TOQUES) -->
+    <!-- 5. MEDICATION FORM MODAL -->
     <div id="medicationModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-emerald-100 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
@@ -511,7 +515,6 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // APP STATE & STORAGE KEYS
         const STORAGE_KEY_USER = 'excellington_cuidador_user';
         const STORAGE_KEY_TERMS = 'excellington_cuidador_terms';
         const STORAGE_KEY_EXPIRY = 'excellington_cuidador_expiration';
