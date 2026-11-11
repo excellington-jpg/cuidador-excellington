@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cuidador Excellington - Gestão & Alerta de Medicamentos</title>
+    <title>Cuidador Excellington - Gestão de Medicamentos & Saúde</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -26,296 +26,229 @@
         }
     </style>
 </head>
-<body class="font-sans min-h-screen flex flex-col">
+<body class="font-sans min-h-screen flex flex-col pb-12">
 
-    <!-- CABEÇALHO DA LINHA EXCELLINGTON -->
-    <header class="bg-gradient-to-r from-emerald-800 to-teal-700 text-white p-5 shadow-lg no-print">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+    <!-- CABEÇALHO EXATO DA PRIMEIRA VERSÃO -->
+    <header class="bg-gradient-to-r from-emerald-800 to-teal-700 text-white p-4 shadow-md no-print">
+        <div class="max-w-md mx-auto flex justify-between items-center">
             <div>
-                <h1 class="text-2xl font-bold flex items-center gap-2">
-                    <i data-lucide="heart-pulse" class="w-7 h-7 text-emerald-300"></i>
+                <h1 class="text-xl font-bold flex items-center gap-1.5">
+                    <i data-lucide="heart-pulse" class="w-6 h-6 text-emerald-300"></i>
                     Cuidador Excellington
                 </h1>
-                <p class="text-emerald-100 text-xs mt-1">
-                    Gestão, controle e lembretes de consumo de medicamentos para pacientes
+                <p class="text-emerald-100 text-[11px]">
+                    Gestão de Medicamentos & Saúde
                 </p>
             </div>
             
-            <!-- IDENTIFICAÇÃO DO USUÁRIO E CONTROLES -->
-            <div class="flex flex-col items-end gap-2">
-                <div id="userDisplayTag" class="hidden bg-white/15 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/20 text-xs flex items-center gap-3">
-                    <span class="flex items-center gap-1.5">
-                        <i data-lucide="user" class="w-3.5 h-3.5 text-emerald-300"></i>
-                        Cuidador: <strong id="currentUserNameDisplay" class="text-white">-</strong>
-                    </span>
-                    <button onclick="showNameModal(true)" class="text-xs text-emerald-200 hover:text-white underline font-normal transition">
-                        Editar
-                    </button>
-                </div>
-
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="requestNotificationPermission()" class="px-3 py-1 bg-teal-600/90 hover:bg-teal-600 text-white text-xs font-semibold rounded-lg border border-teal-500/30 transition flex items-center gap-1">
-                        <i data-lucide="bell" class="w-3.5 h-3.5"></i> Notificações
-                    </button>
-                    <button onclick="openTermsModal()" class="px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-lg border border-white/20 transition flex items-center gap-1">
-                        <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Termos de Uso
-                    </button>
-                    <button onclick="openActivationModal()" class="px-3 py-1 bg-emerald-600/90 hover:bg-emerald-600 text-white text-xs font-semibold rounded-lg border border-emerald-500/30 transition flex items-center gap-1">
-                        <i data-lucide="key" class="w-3.5 h-3.5"></i> Ativação
-                    </button>
-                    <button onclick="exitApp()" class="px-3 py-1 bg-rose-600/90 hover:bg-rose-600 text-white text-xs font-semibold rounded-lg border border-rose-500/30 transition flex items-center gap-1">
-                        <i data-lucide="power" class="w-3.5 h-3.5"></i> Fechar
-                    </button>
-                </div>
+            <div class="flex items-center gap-1.5">
+                <button onclick="openActivationModal()" class="p-2 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-white transition" title="Ativação">
+                    <i data-lucide="key" class="w-4 h-4"></i>
+                </button>
+                <button onclick="openTermsModal()" class="p-2 bg-white/15 hover:bg-white/25 rounded-xl text-white transition" title="Termos de Uso">
+                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                </button>
+                <button onclick="exitApp()" class="p-2 bg-rose-600 hover:bg-rose-500 rounded-xl text-white shadow transition" title="Fechar Aplicativo">
+                    <i data-lucide="power" class="w-4 h-4"></i>
+                </button>
             </div>
+        </div>
+        <!-- Identificação do Usuário Ativo -->
+        <div id="userDisplayTag" class="hidden max-w-md mx-auto mt-2 pt-2 border-t border-white/10 text-[11px] flex justify-between items-center text-emerald-100">
+            <span>Cuidador: <strong id="currentUserNameDisplay" class="text-white">-</strong></span>
+            <button onclick="showNameModal(true)" class="underline text-emerald-200 hover:text-white">Editar</button>
         </div>
     </header>
 
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main class="max-w-7xl mx-auto w-full p-4 md:p-6 flex-1 space-y-6">
+    <!-- CONTEÚDO PRINCIPAL (ESTILO MOBILE OTIMIZADO) -->
+    <main class="max-w-md w-full mx-auto p-4 flex-1 space-y-4">
 
-        <!-- ALERTA DE PERMISSÃO EM SEGUNDO PLANO -->
-        <section id="notificationBanner" class="bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-3 no-print">
-            <div class="flex items-center gap-3">
-                <i data-lucide="bell-ring" class="w-6 h-6 text-amber-600 shrink-0"></i>
-                <div class="text-xs">
-                    <p class="font-bold">Mantenha os Alertas Ativos em Segundo Plano!</p>
-                    <p>Ative as permissões para receber notificações na área de trabalho mesmo com o navegador minimizado.</p>
+        <!-- PAINEL: MONITORAMENTO ATIVO EM 2º PLANO -->
+        <section class="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm space-y-3">
+            <div class="flex items-start gap-3">
+                <div class="p-2.5 bg-emerald-100 text-emerald-700 rounded-xl shrink-0">
+                    <i data-lucide="bell-ring" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm font-bold text-emerald-950">Monitoramento Ativo em 2º Plano</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Ative as notificações para receber alertas sonoros e visuais mesmo com a tela minimizada.</p>
                 </div>
             </div>
-            <button onclick="requestNotificationPermission()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl transition whitespace-nowrap">
-                Ativar Notificações do Navegador
-            </button>
+            <div class="grid grid-cols-2 gap-2 pt-1">
+                <button onclick="requestNotificationPermission()" class="py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5">
+                    <i data-lucide="bell" class="w-3.5 h-3.5"></i> Ativar Notificações
+                </button>
+                <button onclick="testSelectedSound()" class="py-2.5 px-3 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5">
+                    <i data-lucide="volume-2" class="w-3.5 h-3.5"></i> Testar Alarme
+                </button>
+            </div>
         </section>
 
-        <!-- CARTÕES RESUMO E PROGRESSO -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-xs text-slate-500 font-bold uppercase">Pacientes Cadastrados</p>
-                    <h3 id="statTotalPatients" class="text-2xl font-black text-emerald-950 mt-1">0</h3>
-                </div>
-                <div class="p-3 bg-emerald-100 text-emerald-700 rounded-xl">
-                    <i data-lucide="users" class="w-6 h-6"></i>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-xs text-slate-500 font-bold uppercase">Doses Hoje</p>
-                    <h3 id="statTodayDoses" class="text-2xl font-black text-emerald-950 mt-1">0</h3>
-                </div>
-                <div class="p-3 bg-teal-100 text-teal-700 rounded-xl">
-                    <i data-lucide="clock" class="w-6 h-6"></i>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm space-y-2">
-                <div class="flex justify-between items-center text-xs">
-                    <span class="text-slate-500 font-bold uppercase">Progresso de Consumo</span>
-                    <span id="statProgressText" class="font-bold text-emerald-900">0%</span>
-                </div>
-                <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-                    <div id="statProgressBar" class="bg-emerald-600 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SEÇÃO 1: FORMULÁRIOS DE CADASTRO -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 no-print">
-            
-            <!-- FORMULÁRIO DE PACIENTE -->
-            <section class="bg-white rounded-2xl border border-emerald-100 p-5 shadow-sm space-y-4">
-                <h2 class="text-base font-bold text-emerald-900 flex items-center gap-2 border-b border-emerald-50 pb-2">
-                    <i data-lucide="user-plus" class="w-5 h-5 text-emerald-600"></i>
-                    1. Cadastrar Paciente
+        <!-- SEÇÃO: PACIENTES -->
+        <section class="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm space-y-3">
+            <div class="flex justify-between items-center">
+                <h2 class="text-sm font-bold text-emerald-950 flex items-center gap-2">
+                    <i data-lucide="users" class="w-4 h-4 text-emerald-600"></i> Pacientes
                 </h2>
-                <form id="patientForm" onsubmit="handleSavePatient(event)" class="space-y-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Nome Completo do Paciente *</label>
-                        <input type="text" id="patientName" required placeholder="Ex: Maria das Dores" class="w-full p-2.5 text-xs border border-emerald-200 rounded-xl bg-emerald-50/30 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Idade</label>
-                            <input type="number" id="patientAge" placeholder="Ex: 72" class="w-full p-2.5 text-xs border border-emerald-200 rounded-xl bg-emerald-50/30 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Quarto / Leito</label>
-                            <input type="text" id="patientBed" placeholder="Ex: Q. 102" class="w-full p-2.5 text-xs border border-emerald-200 rounded-xl bg-emerald-50/30 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Observações Médicas / Alergias</label>
-                        <textarea id="patientNotes" rows="2" placeholder="Ex: Alérgico a Penicilina" class="w-full p-2.5 text-xs border border-emerald-200 rounded-xl bg-emerald-50/30 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
-                    </div>
-                    <button type="submit" class="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-2">
-                        <i data-lucide="save" class="w-4 h-4"></i> Salvar Paciente
-                    </button>
-                </form>
-            </section>
-
-            <!-- FORMULÁRIO DE MEDICAMENTO, HORÁRIOS E TOQUE -->
-            <section class="lg:col-span-2 bg-white rounded-2xl border border-emerald-100 p-5 shadow-sm space-y-4">
-                <h2 class="text-base font-bold text-emerald-900 flex items-center gap-2 border-b border-emerald-50 pb-2">
-                    <i data-lucide="pill" class="w-5 h-5 text-emerald-600"></i>
-                    2. Cadastrar Medicamento e Agendamento
-                </h2>
-                <form id="medicationForm" onsubmit="handleSaveMedication(event)" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Selecione o Paciente *</label>
-                            <select id="medPatientSelect" required class="w-full p-2.5 text-xs border border-emerald-200 rounded-xl bg-emerald-50/30 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold text-emerald-900">
-                                <option value="">Cadastre um paciente primeiro...</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Nome do Medicamento *</label>
-                            <input type="text" id="medName" required placeholder="Ex: Losartana 50mg" class="w-full p-2.5 text-xs border border-emerald-200 rounded-xl bg-emerald-50/30 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Dose / Posologia</label>
-                            <input type="text" id="medDosage" placeholder="Ex: 1 Comprimido" class="w-full p-2.5 text-xs border border-emerald-200 rounded-xl bg-emerald-50/30 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Vezes ao dia *</label>
-                            <input type="number" id="medTimesPerDay" min="1" max="12" value="1" onchange="renderTimeInputs()" class="w-full p-2.5 text-xs border border-emerald-200 rounded-xl bg-emerald-50/30 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Toque do Alerta *</label>
-                            <div class="flex gap-1">
-                                <select id="medSoundSelect" class="w-full p-2.5 text-xs border border-emerald-200 rounded-xl bg-emerald-50/30 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold text-emerald-900">
-                                    <option value="chime">🔔 Chime Suave (Padrão)</option>
-                                    <option value="alarm">⏰ Despertador Digital</option>
-                                    <option value="melody">🎵 Melodia Médica</option>
-                                    <option value="urgent">🚨 Alerta Urgente</option>
-                                    <option value="zen">🧘 Zen / Relaxante</option>
-                                </select>
-                                <button type="button" onclick="testSelectedSound()" class="px-2.5 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-xl text-xs font-bold transition flex items-center justify-center shrink-0" title="Ouvir Teste">
-                                    <i data-lucide="volume-2" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- SELEÇÃO DOS DIAS DA SEMANA -->
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1.5">Dias de Consumo na Semana *</label>
-                        <div class="flex flex-wrap gap-2 text-xs">
-                            <label class="flex items-center gap-1 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg cursor-pointer hover:bg-emerald-100">
-                                <input type="checkbox" value="Dom" class="day-check w-3.5 h-3.5 text-emerald-600 rounded" checked> Dom
-                            </label>
-                            <label class="flex items-center gap-1 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg cursor-pointer hover:bg-emerald-100">
-                                <input type="checkbox" value="Seg" class="day-check w-3.5 h-3.5 text-emerald-600 rounded" checked> Seg
-                            </label>
-                            <label class="flex items-center gap-1 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg cursor-pointer hover:bg-emerald-100">
-                                <input type="checkbox" value="Ter" class="day-check w-3.5 h-3.5 text-emerald-600 rounded" checked> Ter
-                            </label>
-                            <label class="flex items-center gap-1 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg cursor-pointer hover:bg-emerald-100">
-                                <input type="checkbox" value="Qua" class="day-check w-3.5 h-3.5 text-emerald-600 rounded" checked> Qua
-                            </label>
-                            <label class="flex items-center gap-1 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg cursor-pointer hover:bg-emerald-100">
-                                <input type="checkbox" value="Qui" class="day-check w-3.5 h-3.5 text-emerald-600 rounded" checked> Qui
-                            </label>
-                            <label class="flex items-center gap-1 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg cursor-pointer hover:bg-emerald-100">
-                                <input type="checkbox" value="Sex" class="day-check w-3.5 h-3.5 text-emerald-600 rounded" checked> Sex
-                            </label>
-                            <label class="flex items-center gap-1 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg cursor-pointer hover:bg-emerald-100">
-                                <input type="checkbox" value="Sáb" class="day-check w-3.5 h-3.5 text-emerald-600 rounded" checked> Sáb
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- CONTAINER DINÂMICO PARA HORÁRIOS -->
-                    <div class="bg-emerald-50/50 border border-emerald-100 rounded-xl p-3">
-                        <label class="block text-xs font-bold text-emerald-900 mb-2">Defina os Horários Diários:</label>
-                        <div id="timeInputsContainer" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
-                            <!-- Inserido dinamicamente via JS -->
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-2">
-                        <i data-lucide="plus-circle" class="w-4 h-4"></i> Agendar Medicamento
-                    </button>
-                </form>
-            </section>
-        </div>
-
-        <!-- SEÇÃO 2: MONITOR DIÁRIO DE CONSUMO -->
-        <section class="bg-white rounded-2xl border border-emerald-100 p-5 shadow-sm space-y-4">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b border-emerald-100 pb-3">
-                <div>
-                    <h2 class="text-base font-bold text-emerald-900 flex items-center gap-2">
-                        <i data-lucide="calendar-check" class="w-5 h-5 text-emerald-600"></i>
-                        Painel Diário de Medicamentos & Controladoria de Consumo
-                    </h2>
-                    <p class="text-xs text-slate-500">Altere o status de cada dose de <strong>Pendente</strong> para <strong>Consumido</strong> após a administração.</p>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span id="currentDayBadge" class="bg-emerald-100 text-emerald-900 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200">
-                        Hoje: -
-                    </span>
-                    <button onclick="renderDailySchedule()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1.5">
-                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Atualizar
-                    </button>
-                </div>
+                <button onclick="openPatientModal()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition flex items-center gap-1">
+                    <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> + Novo
+                </button>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs border-collapse">
-                    <thead>
-                        <tr class="bg-emerald-50 text-emerald-950 font-bold border-b border-emerald-200">
-                            <th class="p-3">Horário</th>
-                            <th class="p-3">Paciente</th>
-                            <th class="p-3">Medicamento / Dose</th>
-                            <th class="p-3">Dias Programados</th>
-                            <th class="p-3">Toque</th>
-                            <th class="p-3 text-center">Status do Consumo</th>
-                            <th class="p-3 text-right">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dailyScheduleTable" class="divide-y divide-emerald-50">
-                        <!-- Preenchido via JavaScript -->
-                    </tbody>
-                </table>
+            <!-- Seletor / Lista de Pacientes -->
+            <div id="patientListContainer" class="space-y-2">
+                <!-- Preenchido dinamicamente -->
+            </div>
+        </section>
+
+        <!-- SEÇÃO: RESUMO DO DIA -->
+        <section class="bg-gradient-to-br from-emerald-700 to-teal-800 rounded-2xl p-4 text-white shadow-md space-y-3">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-200">Resumo do Dia</h2>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/15 text-center">
+                    <h3 id="statPending" class="text-2xl font-black text-white">0</h3>
+                    <p class="text-[11px] text-emerald-100 font-medium mt-0.5">Pendentes</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/15 text-center">
+                    <h3 id="statConsumed" class="text-2xl font-black text-white">0</h3>
+                    <p class="text-[11px] text-emerald-100 font-medium mt-0.5">Consumidos</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO: GERENCIAR MEDICAMENTOS & AGENDAMENTO -->
+        <section class="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm space-y-3">
+            <h2 class="text-sm font-bold text-emerald-950 flex items-center gap-2">
+                <i data-lucide="pill" class="w-4 h-4 text-emerald-600"></i> Cadastrar Medicamento
+            </h2>
+            <form id="medicationForm" onsubmit="handleSaveMedication(event)" class="space-y-3">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Paciente *</label>
+                    <select id="medPatientSelect" required class="w-full p-2.5 text-xs border border-emerald-200 rounded-xl bg-emerald-50/40 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold text-emerald-900">
+                        <option value="">Cadastre um paciente primeiro...</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Nome do Remédio *</label>
+                        <input type="text" id="medName" required placeholder="Ex: Losartana" class="w-full p-2.5 text-xs border border-emerald-200 rounded-xl bg-emerald-50/40 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Dose / Posologia</label>
+                        <input type="text" id="medDosage" placeholder="Ex: 1 Comprimido" class="w-full p-2.5 text-xs border border-emerald-200 rounded-xl bg-emerald-50/40 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Vezes ao Dia *</label>
+                        <input type="number" id="medTimesPerDay" min="1" max="12" value="1" onchange="renderTimeInputs()" class="w-full p-2.5 text-xs border border-emerald-200 rounded-xl bg-emerald-50/40 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Toque do Alerta *</label>
+                        <select id="medSoundSelect" class="w-full p-2.5 text-xs border border-emerald-200 rounded-xl bg-emerald-50/40 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold text-emerald-900">
+                            <option value="chime">🔔 Chime Suave</option>
+                            <option value="alarm">⏰ Despertador</option>
+                            <option value="melody">🎵 Melodia</option>
+                            <option value="urgent">🚨 Urgente</option>
+                            <option value="zen">🧘 Zen / Relax</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Dias da Semana -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Dias da Semana *</label>
+                    <div class="flex flex-wrap gap-1 text-[11px]">
+                        <label class="px-2 py-1 bg-emerald-50 border border-emerald-200 rounded-lg cursor-pointer"><input type="checkbox" value="Dom" class="day-check" checked> Dom</label>
+                        <label class="px-2 py-1 bg-emerald-50 border border-emerald-200 rounded-lg cursor-pointer"><input type="checkbox" value="Seg" class="day-check" checked> Seg</label>
+                        <label class="px-2 py-1 bg-emerald-50 border border-emerald-200 rounded-lg cursor-pointer"><input type="checkbox" value="Ter" class="day-check" checked> Ter</label>
+                        <label class="px-2 py-1 bg-emerald-50 border border-emerald-200 rounded-lg cursor-pointer"><input type="checkbox" value="Qua" class="day-check" checked> Qua</label>
+                        <label class="px-2 py-1 bg-emerald-50 border border-emerald-200 rounded-lg cursor-pointer"><input type="checkbox" value="Qui" class="day-check" checked> Qui</label>
+                        <label class="px-2 py-1 bg-emerald-50 border border-emerald-200 rounded-lg cursor-pointer"><input type="checkbox" value="Sex" class="day-check" checked> Sex</label>
+                        <label class="px-2 py-1 bg-emerald-50 border border-emerald-200 rounded-lg cursor-pointer"><input type="checkbox" value="Sáb" class="day-check" checked> Sáb</label>
+                    </div>
+                </div>
+
+                <!-- Horários -->
+                <div class="bg-emerald-50/50 p-2.5 rounded-xl border border-emerald-100">
+                    <label class="block text-[11px] font-bold text-emerald-900 mb-1.5">Horários das Doses:</label>
+                    <div id="timeInputsContainer" class="grid grid-cols-3 gap-2"></div>
+                </div>
+
+                <button type="submit" class="w-full py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Agendar Medicamento
+                </button>
+            </form>
+        </section>
+
+        <!-- SEÇÃO: LISTA DO DIA E STATUS -->
+        <section class="bg-white rounded-2xl border border-emerald-100 p-4 shadow-sm space-y-3">
+            <div class="flex justify-between items-center border-b border-emerald-50 pb-2">
+                <h2 class="text-sm font-bold text-emerald-950 flex items-center gap-2">
+                    <i data-lucide="calendar-check" class="w-4 h-4 text-emerald-600"></i> Controle de Consumo (Hoje)
+                </h2>
+                <span id="currentDayBadge" class="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">-</span>
+            </div>
+
+            <div id="dailyScheduleList" class="space-y-2">
+                <!-- Preenchido via JS -->
             </div>
         </section>
 
     </main>
 
-    <footer class="bg-slate-200 border-t border-slate-300 py-4 text-center text-xs text-slate-600 no-print">
-        Cuidador Excellington &middot; Saúde e Bem-Estar 100% Integrados
-    </footer>
+    <!-- MODAL DE CADASTRO DE PACIENTE -->
+    <div id="patientModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3">
+            <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Cadastrar Novo Paciente</h3>
+            <form onsubmit="handleSavePatient(event)" class="space-y-2.5">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Nome Completo *</label>
+                    <input type="text" id="modalPatientName" required placeholder="Ex: Maria Oliveira" class="w-full p-2.5 text-xs border rounded-xl">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Idade</label>
+                        <input type="number" id="modalPatientAge" placeholder="Ex: 78" class="w-full p-2.5 text-xs border rounded-xl">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Quarto / Leito</label>
+                        <input type="text" id="modalPatientBed" placeholder="Ex: 101" class="w-full p-2.5 text-xs border rounded-xl">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Observações / Alergias</label>
+                    <textarea id="modalPatientNotes" rows="2" placeholder="Ex: Alérgico a dipirona" class="w-full p-2.5 text-xs border rounded-xl"></textarea>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closePatientModal()" class="w-1/2 py-2 bg-slate-100 font-bold text-xs rounded-xl">Cancelar</button>
+                    <button type="submit" class="w-1/2 py-2 bg-emerald-700 text-white font-bold text-xs rounded-xl shadow">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    <!-- MODAL DE ALERTA DE HORÁRIO (VISUAL E SONORO NO NAVEGADOR) -->
+    <!-- MODAL DE ALERTA (ALARME EM SEGUNDO PLANO) -->
     <div id="alarmModal" class="fixed inset-0 bg-slate-900/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 border-4 border-emerald-500 shadow-2xl space-y-5 text-center pulse-alarm">
-            <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto">
-                <i data-lucide="bell-ring" class="w-10 h-10 animate-bounce"></i>
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 border-4 border-emerald-500 shadow-2xl space-y-4 text-center pulse-alarm">
+            <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto">
+                <i data-lucide="bell-ring" class="w-8 h-8 animate-bounce"></i>
             </div>
-            
             <div>
-                <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full">HORA DA MEDICAÇÃO!</span>
-                <h3 id="alarmPatientName" class="text-2xl font-black text-slate-800 mt-2">Nome do Paciente</h3>
-                <p id="alarmBed" class="text-xs text-slate-500">Leito / Quarto: -</p>
+                <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Hora da Medicação!</span>
+                <h3 id="alarmPatientName" class="text-xl font-black text-slate-800 mt-2">Paciente</h3>
+                <p id="alarmBed" class="text-xs text-slate-500">Leito: -</p>
             </div>
-
-            <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 space-y-1">
-                <p class="text-xs text-emerald-800 font-semibold uppercase">Medicamento a administrar:</p>
-                <h4 id="alarmMedName" class="text-xl font-bold text-emerald-950">Losartana 50mg</h4>
-                <p id="alarmDosage" class="text-xs text-emerald-700">Dose: 1 Comprimido</p>
-                <p id="alarmTime" class="text-xs font-bold text-emerald-900 mt-2">Horário: 08:00</p>
+            <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 space-y-1">
+                <h4 id="alarmMedName" class="text-base font-bold text-emerald-950">Remédio</h4>
+                <p id="alarmDosage" class="text-xs text-emerald-700">Dose</p>
+                <p id="alarmTime" class="text-xs font-bold text-emerald-900 mt-1">Horário: 00:00</p>
             </div>
-
-            <div class="flex gap-3">
-                <button onclick="dismissAlarm(false)" class="w-1/2 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
-                    Adiar 5 Minutos
-                </button>
-                <button onclick="dismissAlarm(true)" class="w-1/2 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-lg transition flex items-center justify-center gap-2">
-                    <i data-lucide="check-circle" class="w-4 h-4"></i> Confirmar Consumo
+            <div class="flex gap-2">
+                <button onclick="dismissAlarm(false)" class="w-1/2 py-2.5 bg-slate-100 text-slate-700 font-bold text-xs rounded-xl">Adiar</button>
+                <button onclick="dismissAlarm(true)" class="w-1/2 py-2.5 bg-emerald-700 text-white font-bold text-xs rounded-xl shadow flex items-center justify-center gap-1">
+                    <i data-lucide="check" class="w-3.5 h-3.5"></i> Consumido
                 </button>
             </div>
         </div>
@@ -323,104 +256,78 @@
 
     <!-- MODAL 1: IDENTIFICAÇÃO DO USUÁRIO -->
     <div id="nameModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 border border-slate-200 shadow-2xl space-y-4">
-            <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
-                <div class="p-2.5 bg-emerald-100 text-emerald-800 rounded-xl">
-                    <i data-lucide="user-check" class="w-6 h-6"></i>
-                </div>
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-3">
+            <div class="flex items-center gap-2 border-b pb-2">
+                <div class="p-2 bg-emerald-100 text-emerald-800 rounded-xl"><i data-lucide="user-check" class="w-5 h-5"></i></div>
                 <div>
-                    <h3 class="text-base font-bold text-slate-800">Identificação do Cuidador</h3>
-                    <p class="text-xs text-slate-500">Informe seu nome ou responsável técnico para liberar o aplicativo.</p>
+                    <h3 class="text-sm font-bold text-slate-800">Identificação do Cuidador</h3>
+                    <p class="text-[11px] text-slate-500">Informe seu nome para liberar o app.</p>
                 </div>
             </div>
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Nome do Cuidador / Responsável</label>
-                <input type="text" id="userNameInput" placeholder="Ex: Enfa. Maria Clara" class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Nome do Cuidador *</label>
+                <input type="text" id="userNameInput" placeholder="Ex: Enfa. Maria" class="w-full p-2.5 text-xs border rounded-xl">
             </div>
-            <div class="flex gap-2 justify-end pt-2">
-                <button id="cancelNameBtn" onclick="closeNameModal()" class="hidden px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
-                    Cancelar
-                </button>
-                <button onclick="saveUserName()" class="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow transition">
-                    Salvar e Continuar
-                </button>
+            <div class="flex gap-2 pt-1">
+                <button id="cancelNameBtn" onclick="closeNameModal()" class="hidden w-1/2 py-2 bg-slate-100 font-bold text-xs rounded-xl">Cancelar</button>
+                <button onclick="saveUserName()" class="w-full py-2.5 bg-emerald-700 text-white font-bold text-xs rounded-xl shadow">Salvar e Continuar</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL 2: ATIVAÇÃO PIX (EXATA ESTRUTURA EXCELLINGTON) -->
+    <!-- MODAL 2: ATIVAÇÃO PIX (PADRÃO EXCELLINGTON) -->
     <div id="activationModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 border border-slate-200 shadow-2xl relative space-y-4">
-            <button onclick="closeActivationModalIfValid()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
-                <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
-            <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
-                <div class="p-2.5 bg-emerald-100 text-emerald-800 rounded-xl">
-                    <i data-lucide="shield-check" class="w-6 h-6"></i>
-                </div>
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 relative space-y-3 shadow-2xl">
+            <button onclick="closeActivationModalIfValid()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <div class="flex items-center gap-2 border-b pb-2">
+                <div class="p-2 bg-emerald-100 text-emerald-800 rounded-xl"><i data-lucide="shield-check" class="w-5 h-5"></i></div>
                 <div>
-                    <h3 class="text-base font-bold text-slate-800">Ativação do Cuidador Excellington</h3>
-                    <p class="text-xs text-slate-500">Liberação de acesso do aplicativo</p>
+                    <h3 class="text-sm font-bold text-slate-800">Ativação do Aplicativo</h3>
+                    <p class="text-[11px] text-slate-500">Liberação de acesso</p>
                 </div>
             </div>
-
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs space-y-1">
-                <p><strong>Usuário Cadastrado:</strong> <span id="activationUserName" class="text-emerald-900 font-bold">-</span></p>
-                <p><strong>Data de Referência (Expiração):</strong> <span id="activationExpDate" class="text-emerald-900 font-bold">-</span></p>
+            <div class="bg-slate-50 border rounded-xl p-2.5 text-[11px] space-y-1">
+                <p><strong>Usuário:</strong> <span id="activationUserName" class="text-emerald-900 font-bold">-</span></p>
+                <p><strong>Expiração:</strong> <span id="activationExpDate" class="text-emerald-900 font-bold">-</span></p>
             </div>
-
-            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-900 leading-relaxed">
-                Para manter o sistema ativo por mais 30 dias, apoie o projeto com qualquer valor via Pix, envie o comprovante juntamente com as informações acima para <strong>excellington@gmail.com</strong> e insira o código de liberação recebido.
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[11px] text-amber-900">
+                Para manter o sistema ativo por mais 30 dias, apoie o projeto via Pix, envie o comprovante para <strong>excellington@gmail.com</strong> e insira o código.
             </div>
-
-            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-center text-xs space-y-1.5">
-                <p class="text-slate-600">Chave Pix para doação:</p>
+            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 text-center text-[11px] space-y-1">
+                <p class="text-slate-600">Chave Pix:</p>
                 <p class="font-bold text-emerald-900 text-sm">16250510850</p>
-                <button onclick="copyPix()" class="w-full py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-xs transition">
-                    Copiar Chave Pix
-                </button>
+                <button onclick="copyPix()" class="w-full py-1.5 bg-emerald-700 text-white font-bold rounded-lg text-xs">Copiar Chave Pix</button>
             </div>
-
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Código de Ativação</label>
-                <input type="text" id="activationCodeInput" placeholder="Digite o código recebido" class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                <label class="block text-[11px] font-bold text-slate-700 mb-1">Código de Ativação</label>
+                <input type="text" id="activationCodeInput" placeholder="Digite o código" class="w-full p-2.5 text-xs border rounded-xl">
             </div>
-
-            <div class="flex gap-2 pt-2">
-                <button onclick="closeActivationModalIfValid()" class="w-1/2 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
-                    Fechar / Continuar
-                </button>
-                <button onclick="validateActivationCode()" class="w-1/2 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow transition">
-                    Ativar Aplicativo
-                </button>
+            <div class="flex gap-2 pt-1">
+                <button onclick="closeActivationModalIfValid()" class="w-1/2 py-2 bg-slate-100 font-bold text-xs rounded-xl">Fechar</button>
+                <button onclick="validateActivationCode()" class="w-1/2 py-2 bg-emerald-700 text-white font-bold text-xs rounded-xl shadow">Ativar</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL 3: TERMOS DE USO -->
     <div id="termsModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 border border-slate-200 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <h3 class="text-lg font-bold text-slate-800 border-b border-slate-100 pb-2">Termo de Uso e Responsabilidade Medicamentosa</h3>
-            <div class="text-xs text-slate-600 space-y-2.5 leading-relaxed">
-                <p>Ao utilizar o aplicativo <strong>Cuidador Excellington</strong>, você declara ter lido e aceito as condições abaixo:</p>
-                <p>1. O aplicativo é uma <strong>ferramenta auxiliar de organização</strong> e lembretes para cuidadores e pacientes. Ele não substitui o acompanhamento profissional ou prescrição médica oficial.</p>
-                <p>2. A responsabilidade pela exatidão dos horários, dosagens e administração efetiva dos medicamentos é inteiramente do usuário/cuidador responsável.</p>
-                <p>3. Os dados dos pacientes e medicamentos ficam armazenados <strong>exclusivamente de forma local</strong> no seu navegador (<em>LocalStorage</em>), garantindo sigilo total das informações de saúde.</p>
-                <p>4. O sistema de alarmes depende da permissão de áudio e de notificações do navegador para funcionar corretamente em segundo plano.</p>
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 space-y-3 max-h-[85vh] overflow-y-auto shadow-2xl">
+            <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Termo de Uso e Responsabilidade</h3>
+            <div class="text-[11px] text-slate-600 space-y-2 leading-relaxed">
+                <p>1. O aplicativo é um assistente de lembretes e organização para cuidadores e não substitui prescrições médicas.</p>
+                <p>2. A exatidão dos horários e administrações é de responsabilidade do operador.</p>
+                <p>3. Os dados são salvos localmente no navegador (LocalStorage) garantindo total privacidade.</p>
             </div>
-            <div class="pt-2">
-                <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
-                    <input type="checkbox" id="acceptTermsCheckbox" class="w-4 h-4 text-emerald-600 rounded">
-                    Li e concordo com o Termo de Uso e Responsabilidade.
+            <div class="pt-1">
+                <label class="flex items-center gap-2 cursor-pointer text-[11px] font-bold text-slate-700">
+                    <input type="checkbox" id="acceptTermsCheckbox" class="w-4 h-4 text-emerald-600 rounded"> Li e concordo com os termos.
                 </label>
             </div>
-            <button onclick="acceptTerms()" class="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow transition">
-                Confirmar e Aceitar
-            </button>
+            <button onclick="acceptTerms()" class="w-full py-2.5 bg-emerald-700 text-white font-bold text-xs rounded-xl shadow">Confirmar Aceitação</button>
         </div>
     </div>
 
-    <!-- SCRIPT PRINCIPAL DA APLICAÇÃO -->
+    <!-- SCRIPT DE FUNCIONALIDADES -->
     <script>
         const STORAGE_KEY_NAME = 'excellington_cuidador_username';
         const STORAGE_KEY_EXPIRY = 'excellington_cuidador_expiration';
@@ -431,13 +338,12 @@
 
         let patients = [];
         let medications = [];
-        let logs = {}; 
-        
+        let logs = {};
+
         let audioCtx = null;
         let alarmInterval = null;
         let activeAlarmData = null;
 
-        // --- INICIALIZAÇÃO ---
         window.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             loadStoredData();
@@ -445,7 +351,7 @@
             renderTimeInputs();
             updateCurrentDayBadge();
             
-            // Loop de verificação de horários em segundo plano a cada 10 segundos
+            // Loop de verificação de segundo plano a cada 10s
             setInterval(checkMedicationSchedules, 10000);
         });
 
@@ -454,6 +360,7 @@
             medications = JSON.parse(localStorage.getItem(STORAGE_KEY_MEDS) || '[]');
             logs = JSON.parse(localStorage.getItem(STORAGE_KEY_LOGS) || '{}');
             populatePatientSelect();
+            renderPatientList();
             renderDailySchedule();
         }
 
@@ -463,7 +370,7 @@
             localStorage.setItem(STORAGE_KEY_LOGS, JSON.stringify(logs));
         }
 
-        // --- LICENCIAMENTO E PADRÃO EXCELLINGTON ---
+        // --- LICENCIAMENTO & SEGURANÇA ---
         function readStoredExpiration() {
             const raw = localStorage.getItem(STORAGE_KEY_EXPIRY);
             if (!raw) return null;
@@ -546,7 +453,7 @@
             if (storedExp && Date.now() <= storedExp) {
                 document.getElementById('activationModal').classList.add('hidden');
             } else {
-                alert('Sua licença está expirada. É necessário inserir um código de liberação válido.');
+                alert('Sua licença está expirada. Insira o código de liberação.');
             }
         }
 
@@ -577,13 +484,13 @@
                 alert('Aplicativo ativado com sucesso por mais 30 dias!');
                 checkAppAccess();
             } else {
-                alert('Código de ativação inválido. Confira os dados informados.');
+                alert('Código de ativação inválido.');
             }
         }
 
         function acceptTerms() {
             if (!document.getElementById('acceptTermsCheckbox').checked) {
-                alert('Marque a caixa para confirmar a aceitação dos termos.');
+                alert('Marque a caixa para confirmar a aceitação.');
                 return;
             }
             localStorage.setItem(STORAGE_KEY_TERMS, 'true');
@@ -607,431 +514,328 @@
             }
         }
 
-        // --- MANIPULAÇÃO DE PACIENTES E MEDICAMENTOS ---
+        // --- GESTÃO DE PACIENTES ---
+        function openPatientModal() {
+            document.getElementById('patientModal').classList.remove('hidden');
+        }
+
+        function closePatientModal() {
+            document.getElementById('patientModal').classList.add('hidden');
+        }
+
         function handleSavePatient(e) {
             e.preventDefault();
-            const name = document.getElementById('patientName').value.trim();
-            const age = document.getElementById('patientAge').value.trim();
-            const bed = document.getElementById('patientBed').value.trim();
-            const notes = document.getElementById('patientNotes').value.trim();
+            const name = document.getElementById('modalPatientName').value.trim();
+            const age = document.getElementById('modalPatientAge').value.trim();
+            const bed = document.getElementById('modalPatientBed').value.trim();
+            const notes = document.getElementById('modalPatientNotes').value.trim();
 
-            const newPatient = {
-                id: 'p_' + Date.now(),
-                name,
-                age,
-                bed,
-                notes
-            };
-
+            const newPatient = { id: 'p_' + Date.now(), name, age, bed, notes };
             patients.push(newPatient);
             saveData();
             populatePatientSelect();
+            renderPatientList();
             renderDailySchedule();
-            document.getElementById('patientForm').reset();
-            alert(`Paciente ${name} cadastrado com sucesso!`);
+            closePatientModal();
+            document.querySelector('#patientModal form').reset();
+        }
+
+        function deletePatient(patientId) {
+            if (confirm('Deseja excluir este paciente e seus remédios associados?')) {
+                patients = patients.filter(p => p.id !== patientId);
+                medications = medications.filter(m => m.patientId !== patientId);
+                saveData();
+                populatePatientSelect();
+                renderPatientList();
+                renderDailySchedule();
+            }
+        }
+
+        function renderPatientList() {
+            const container = document.getElementById('patientListContainer');
+            container.innerHTML = '';
+
+            if (patients.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-2">Nenhum paciente cadastrado.</p>';
+                return;
+            }
+
+            patients.forEach(p => {
+                const medsCount = medications.filter(m => m.patientId === p.id).length;
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-emerald-50/50 p-2.5 rounded-xl border border-emerald-100 text-xs">
+                        <div>
+                            <strong>${p.name}</strong>
+                            <span class="text-slate-500 block text-[10px]">${p.bed ? 'Quarto ' + p.bed : ''} ${p.age ? '• ' + p.age + ' anos' : ''}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="bg-emerald-200/60 text-emerald-900 text-[10px] font-bold px-2 py-0.5 rounded-full">${medsCount} remédios</span>
+                            <button onclick="deletePatient('${p.id}')" class="text-rose-500 hover:text-rose-700 p-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
         }
 
         function populatePatientSelect() {
             const select = document.getElementById('medPatientSelect');
-            select.innerHTML = '';
-            if (patients.length === 0) {
-                select.innerHTML = '<option value="">Cadastre um paciente primeiro...</option>';
-                return;
-            }
-
+            select.innerHTML = '<option value="">Selecione um paciente...</option>';
             patients.forEach(p => {
                 select.innerHTML += `<option value="${p.id}">${p.name} ${p.bed ? '(' + p.bed + ')' : ''}</option>`;
             });
         }
 
         function renderTimeInputs() {
-            const timesCount = parseInt(document.getElementById('medTimesPerDay').value) || 1;
+            const count = parseInt(document.getElementById('medTimesPerDay').value) || 1;
             const container = document.getElementById('timeInputsContainer');
             container.innerHTML = '';
-
-            const defaultTimes = ['08:00', '12:00', '16:00', '20:00', '00:00', '04:00'];
-
-            for (let i = 0; i < timesCount; i++) {
-                const defaultVal = defaultTimes[i % defaultTimes.length];
+            const defaults = ['08:00', '12:00', '16:00', '20:00', '00:00', '04:00'];
+            for (let i = 0; i < count; i++) {
                 container.innerHTML += `
-                    <div>
-                        <label class="block text-[10px] text-slate-500 font-bold mb-0.5">Dose ${i + 1}</label>
-                        <input type="time" class="med-time-input w-full p-1.5 text-xs border border-emerald-300 rounded-lg bg-white font-bold text-emerald-900" value="${defaultVal}" required>
-                    </div>
+                    <input type="time" class="med-time-input w-full p-2 text-xs border rounded-lg bg-white font-bold text-emerald-900" value="${defaults[i % defaults.length]}" required>
                 `;
             }
-        }
-
-        function testSelectedSound() {
-            const soundType = document.getElementById('medSoundSelect').value;
-            playAudioTone(soundType);
         }
 
         function handleSaveMedication(e) {
             e.preventDefault();
             const patientId = document.getElementById('medPatientSelect').value;
             if (!patientId) {
-                alert('Selecione um paciente para o agendamento.');
+                alert('Selecione um paciente.');
                 return;
             }
-
             const name = document.getElementById('medName').value.trim();
             const dosage = document.getElementById('medDosage').value.trim();
             const sound = document.getElementById('medSoundSelect').value;
-            
-            const selectedDays = Array.from(document.querySelectorAll('.day-check:checked')).map(cb => cb.value);
-            if (selectedDays.length === 0) {
-                alert('Selecione pelo menos um dia da semana.');
+            const days = Array.from(document.querySelectorAll('.day-check:checked')).map(cb => cb.value);
+            const times = Array.from(document.querySelectorAll('.med-time-input')).map(i => i.value);
+
+            if (days.length === 0) {
+                alert('Selecione ao menos um dia.');
                 return;
             }
 
-            const timeInputs = document.querySelectorAll('.med-time-input');
-            const times = Array.from(timeInputs).map(input => input.value).filter(v => v);
-
-            const newMed = {
-                id: 'm_' + Date.now(),
-                patientId,
-                name,
-                dosage,
-                sound,
-                days: selectedDays,
-                times: times
-            };
-
-            medications.push(newMed);
+            medications.push({ id: 'm_' + Date.now(), patientId, name, dosage, sound, days, times });
             saveData();
+            renderPatientList();
             renderDailySchedule();
             document.getElementById('medicationForm').reset();
             renderTimeInputs();
-            alert(`Medicamento ${name} cadastrado com sucesso!`);
+            alert('Medicamento agendado com sucesso!');
         }
 
-        function deleteMedication(medId) {
-            if (confirm('Deseja remover este medicamento do agendamento?')) {
-                medications = medications.filter(m => m.id !== medId);
-                saveData();
-                renderDailySchedule();
-            }
+        function deleteMedication(id) {
+            medications = medications.filter(m => m.id !== id);
+            saveData();
+            renderPatientList();
+            renderDailySchedule();
         }
 
-        // --- PAINEL DIÁRIO E CONTROLE DE STATUS ---
+        // --- PAINEL DIÁRIO & STATUS ---
         function getTodayString() {
-            const d = new Date();
-            return d.toISOString().split('T')[0];
+            return new Date().toISOString().split('T')[0];
         }
 
         function getTodayDayName() {
-            const daysMap = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-            return daysMap[new Date().getDay()];
+            return ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][new Date().getDay()];
         }
 
         function updateCurrentDayBadge() {
-            const todayStr = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
-            document.getElementById('currentDayBadge').innerText = `Hoje: ${todayStr}`;
+            const str = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' });
+            document.getElementById('currentDayBadge').innerText = str;
         }
 
         function renderDailySchedule() {
-            const tableBody = document.getElementById('dailyScheduleTable');
-            tableBody.innerHTML = '';
+            const listContainer = document.getElementById('dailyScheduleList');
+            listContainer.innerHTML = '';
 
             const todayStr = getTodayString();
-            const currentDayName = getTodayDayName();
-
-            let scheduleItems = [];
+            const dayName = getTodayDayName();
+            let items = [];
 
             medications.forEach(med => {
-                if (med.days.includes(currentDayName)) {
-                    const patient = patients.find(p => p.id === med.patientId) || { name: 'Desconhecido', bed: '-' };
-                    med.times.forEach(time => {
-                        const logKey = `${todayStr}_${med.id}_${time}`;
-                        const status = logs[logKey] || 'pendente';
-
-                        scheduleItems.push({
-                            medId: med.id,
-                            patientName: patient.name,
-                            bed: patient.bed,
+                if (med.days.includes(dayName)) {
+                    const pat = patients.find(p => p.id === med.patientId) || { name: 'Desconhecido' };
+                    med.times.forEach(t => {
+                        const key = `${todayStr}_${med.id}_${t}`;
+                        items.push({
+                            id: med.id,
+                            logKey: key,
+                            patientName: pat.name,
                             medName: med.name,
                             dosage: med.dosage,
-                            sound: med.sound || 'chime',
-                            days: med.days,
-                            time: time,
-                            status: status,
-                            logKey: logKey
+                            time: t,
+                            status: logs[key] || 'pendente',
+                            sound: med.sound
                         });
                     });
                 }
             });
 
-            // Atualiza estatísticas no topo
-            document.getElementById('statTotalPatients').innerText = patients.length;
-            document.getElementById('statTodayDoses').innerText = scheduleItems.length;
+            items.sort((a, b) => a.time.localeCompare(b.time));
 
-            const consumedCount = scheduleItems.filter(i => i.status === 'consumido').length;
-            const progressPct = scheduleItems.length > 0 ? Math.round((consumedCount / scheduleItems.length) * 100) : 0;
-            
-            document.getElementById('statProgressText').innerText = `${progressPct}% (${consumedCount}/${scheduleItems.length})`;
-            document.getElementById('statProgressBar').style.width = `${progressPct}%`;
+            const pending = items.filter(i => i.status === 'pendente').length;
+            const consumed = items.filter(i => i.status === 'consumido').length;
 
-            // Ordena itens por horário
-            scheduleItems.sort((a, b) => a.time.localeCompare(b.time));
+            document.getElementById('statPending').innerText = pending;
+            document.getElementById('statConsumed').innerText = consumed;
 
-            if (scheduleItems.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="p-6 text-center text-slate-400 italic">
-                            Nenhum medicamento agendado para o dia de hoje (${currentDayName}).
-                        </td>
-                    </tr>
-                `;
+            if (items.length === 0) {
+                listContainer.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-3">Nenhum medicamento para hoje.</p>';
                 return;
             }
 
-            const soundLabels = {
-                chime: '🔔 Chime',
-                alarm: '⏰ Despertador',
-                melody: '🎵 Melodia',
-                urgent: '🚨 Urgente',
-                zen: '🧘 Zen'
-            };
-
-            scheduleItems.forEach(item => {
-                const isConsumed = item.status === 'consumido';
-                const statusBadge = isConsumed 
-                    ? `<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-full font-bold inline-flex items-center gap-1"><i data-lucide="check" class="w-3 h-3"></i> Consumido</span>`
-                    : `<span class="bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-1 rounded-full font-bold inline-flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> Pendente</span>`;
-
-                tableBody.innerHTML += `
-                    <tr class="hover:bg-emerald-50/40 transition">
-                        <td class="p-3 font-black text-emerald-900 text-sm">${item.time}</td>
-                        <td class="p-3 font-semibold text-slate-800">
-                            ${item.patientName}
-                            ${item.bed ? `<span class="text-[10px] text-slate-400 block">Leito: ${item.bed}</span>` : ''}
-                        </td>
-                        <td class="p-3 font-medium text-slate-700">
-                            <strong>${item.medName}</strong>
-                            ${item.dosage ? `<span class="text-slate-400 text-[11px]"> - ${item.dosage}</span>` : ''}
-                        </td>
-                        <td class="p-3 text-slate-500 text-[11px]">${item.days.join(', ')}</td>
-                        <td class="p-3 text-emerald-700 text-[11px] font-semibold">${soundLabels[item.sound] || '🔔 Chime'}</td>
-                        <td class="p-3 text-center">${statusBadge}</td>
-                        <td class="p-3 text-right">
-                            <div class="flex items-center justify-end gap-1">
-                                <button onclick="toggleStatus('${item.logKey}')" class="px-2.5 py-1 ${isConsumed ? 'bg-slate-200 text-slate-700 hover:bg-slate-300' : 'bg-emerald-600 text-white hover:bg-emerald-700'} font-bold rounded-lg text-xs transition">
-                                    ${isConsumed ? 'Desfazer' : 'Marcar Consumido'}
-                                </button>
-                                <button onclick="deleteMedication('${item.medId}')" class="p-1 text-rose-500 hover:text-rose-700 rounded-lg hover:bg-rose-50 transition" title="Excluir Remédio">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+            items.forEach(item => {
+                const isCons = item.status === 'consumido';
+                listContainer.innerHTML += `
+                    <div class="flex items-center justify-between p-2.5 rounded-xl border ${isCons ? 'bg-emerald-50/60 border-emerald-200' : 'bg-slate-50 border-slate-200'} text-xs">
+                        <div>
+                            <span class="font-black text-emerald-900">${item.time}</span> - <strong>${item.medName}</strong> (${item.dosage || 'Dose padrão'})
+                            <span class="block text-[10px] text-slate-500">Paciente: ${item.patientName}</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="toggleStatus('${item.logKey}')" class="px-2.5 py-1 ${isCons ? 'bg-emerald-200 text-emerald-900' : 'bg-emerald-600 text-white'} font-bold rounded-lg text-[10px]">
+                                ${isCons ? 'Consumido' : 'Marcar'}
+                            </button>
+                            <button onclick="deleteMedication('${item.id}')" class="text-rose-500 p-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </div>
+                    </div>
                 `;
             });
-
             lucide.createIcons();
         }
 
-        function toggleStatus(logKey) {
-            if (logs[logKey] === 'consumido') {
-                logs[logKey] = 'pendente';
-            } else {
-                logs[logKey] = 'consumido';
-            }
+        function toggleStatus(key) {
+            logs[key] = logs[key] === 'consumido' ? 'pendente' : 'consumido';
             saveData();
             renderDailySchedule();
         }
 
-        // --- SISTEMA DE ALERTA DE SEGUNDO PLANO E SINTETIZADOR ---
+        // --- SISTEMA DE ALARMES & ÁUDIO ---
         function requestNotificationPermission() {
             if ("Notification" in window) {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        alert("Notificações em segundo plano ativadas com sucesso!");
-                        document.getElementById('notificationBanner').classList.add('hidden');
-                    } else {
-                        alert("As permissões de notificação foram negadas. O aplicativo disparará o alerta sonoro e visual apenas com a aba aberta.");
-                    }
+                Notification.requestPermission().then(perm => {
+                    if (perm === "granted") alert("Notificações em segundo plano ativadas!");
+                    else alert("Permissões negadas. O aplicativo funcionará com alerta na tela aberta.");
                 });
-            } else {
-                alert("Este navegador não suporta a API de Notificações.");
             }
         }
 
-        function playAudioTone(soundType = 'chime') {
+        function playAudioTone(type = 'chime') {
             try {
-                if (!audioCtx) {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
-
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
                 const now = audioCtx.currentTime;
 
-                if (soundType === 'alarm') {
-                    // Despertador Digital (Beep duplo agudo)
-                    [0, 0.2].forEach(delay => {
+                if (type === 'alarm') {
+                    [0, 0.2].forEach(d => {
                         const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
+                        const g = audioCtx.createGain();
                         osc.type = 'square';
-                        osc.frequency.setValueAtTime(880, now + delay);
-                        gain.gain.setValueAtTime(0.15, now + delay);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.1);
-                        osc.connect(gain);
-                        gain.connect(audioCtx.destination);
-                        osc.start(now + delay);
-                        osc.stop(now + delay + 0.1);
+                        osc.frequency.setValueAtTime(880, now + d);
+                        g.gain.setValueAtTime(0.15, now + d);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + d + 0.1);
+                        osc.connect(g); g.connect(audioCtx.destination);
+                        osc.start(now + d); osc.stop(now + d + 0.1);
                     });
-                } else if (soundType === 'melody') {
-                    // Melodia Médica (Tríade harmoniosa)
-                    const freqs = [523.25, 659.25, 783.99]; // C5, E5, G5
-                    freqs.forEach((freq, idx) => {
+                } else if (type === 'melody') {
+                    [523.25, 659.25, 783.99].forEach((f, i) => {
                         const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
+                        const g = audioCtx.createGain();
                         osc.type = 'sine';
-                        osc.frequency.setValueAtTime(freq, now + (idx * 0.12));
-                        gain.gain.setValueAtTime(0.2, now + (idx * 0.12));
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + (idx * 0.12) + 0.3);
-                        osc.connect(gain);
-                        gain.connect(audioCtx.destination);
-                        osc.start(now + (idx * 0.12));
-                        osc.stop(now + (idx * 0.12) + 0.3);
+                        osc.frequency.setValueAtTime(f, now + (i * 0.12));
+                        g.gain.setValueAtTime(0.2, now + (i * 0.12));
+                        g.gain.exponentialRampToValueAtTime(0.001, now + (i * 0.12) + 0.3);
+                        osc.connect(g); g.connect(audioCtx.destination);
+                        osc.start(now + (i * 0.12)); osc.stop(now + (i * 0.12) + 0.3);
                     });
-                } else if (soundType === 'urgent') {
-                    // Alerta Urgente (Pulso rápido duplo)
-                    [0, 0.15].forEach(delay => {
+                } else if (type === 'urgent') {
+                    [0, 0.15].forEach(d => {
                         const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
+                        const g = audioCtx.createGain();
                         osc.type = 'sawtooth';
-                        osc.frequency.setValueAtTime(950, now + delay);
-                        gain.gain.setValueAtTime(0.2, now + delay);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.08);
-                        osc.connect(gain);
-                        gain.connect(audioCtx.destination);
-                        osc.start(now + delay);
-                        osc.stop(now + delay + 0.08);
+                        osc.frequency.setValueAtTime(950, now + d);
+                        g.gain.setValueAtTime(0.2, now + d);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + d + 0.08);
+                        osc.connect(g); g.connect(audioCtx.destination);
+                        osc.start(now + d); osc.stop(now + d + 0.08);
                     });
-                } else if (soundType === 'zen') {
-                    // Zen / Relaxante (Tom grave prolongado)
+                } else if (type === 'zen') {
                     const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
+                    const g = audioCtx.createGain();
                     osc.type = 'sine';
-                    osc.frequency.setValueAtTime(432, now); // 432Hz Zen
-                    gain.gain.setValueAtTime(0.25, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(now);
-                    osc.stop(now + 1.2);
+                    osc.frequency.setValueAtTime(432, now);
+                    g.gain.setValueAtTime(0.25, now);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+                    osc.connect(g); g.connect(audioCtx.destination);
+                    osc.start(now); osc.stop(now + 1.2);
                 } else {
-                    // Chime Suave Padrão (E4 e A4)
-                    const osc1 = audioCtx.createOscillator();
-                    const gain1 = audioCtx.createGain();
-                    osc1.type = 'sine';
-                    osc1.frequency.setValueAtTime(523.25, now);
-                    gain1.gain.setValueAtTime(0.2, now);
-                    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-                    osc1.connect(gain1);
-                    gain1.connect(audioCtx.destination);
-                    osc1.start(now);
-                    osc1.stop(now + 0.5);
-
-                    const osc2 = audioCtx.createOscillator();
-                    const gain2 = audioCtx.createGain();
-                    osc2.type = 'sine';
-                    osc2.frequency.setValueAtTime(659.25, now + 0.15);
-                    gain2.gain.setValueAtTime(0.2, now + 0.15);
-                    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
-                    osc2.connect(gain2);
-                    gain2.connect(audioCtx.destination);
-                    osc2.start(now + 0.15);
-                    osc2.stop(now + 0.7);
+                    const osc = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    g.gain.setValueAtTime(0.2, now);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+                    osc.connect(g); g.connect(audioCtx.destination);
+                    osc.start(now); osc.stop(now + 0.5);
                 }
             } catch (e) {
-                console.log("Erro ao tocar som:", e);
+                console.log(e);
             }
         }
 
-        function startContinuousAlarm(soundType = 'chime') {
-            playAudioTone(soundType);
-            if (alarmInterval) clearInterval(alarmInterval);
-            alarmInterval = setInterval(() => {
-                playAudioTone(soundType);
-            }, 2500);
+        function testSelectedSound() {
+            const sel = document.getElementById('medSoundSelect').value;
+            playAudioTone(sel);
         }
 
-        function stopContinuousAlarm() {
-            if (alarmInterval) {
-                clearInterval(alarmInterval);
-                alarmInterval = null;
-            }
-        }
-
-        // --- MONITOR DE SEGUNDO PLANO ---
         function checkMedicationSchedules() {
             const now = new Date();
-            const currentHours = String(now.getHours()).padStart(2, '0');
-            const currentMinutes = String(now.getMinutes()).padStart(2, '0');
-            const currentTimeStr = `${currentHours}:${currentMinutes}`;
-
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             const todayStr = getTodayString();
-            const currentDayName = getTodayDayName();
+            const dayName = getTodayDayName();
 
             medications.forEach(med => {
-                if (med.days.includes(currentDayName) && med.times.includes(currentTimeStr)) {
-                    const logKey = `${todayStr}_${med.id}_${currentTimeStr}`;
-                    const status = logs[logKey] || 'pendente';
-
-                    if (status === 'pendente') {
-                        if (!activeAlarmData || activeAlarmData.logKey !== logKey) {
-                            triggerAlarm(med, currentTimeStr, logKey);
+                if (med.days.includes(dayName) && med.times.includes(timeStr)) {
+                    const key = `${todayStr}_${med.id}_${timeStr}`;
+                    if ((logs[key] || 'pendente') === 'pendente') {
+                        if (!activeAlarmData || activeAlarmData.logKey !== key) {
+                            triggerAlarm(med, timeStr, key);
                         }
                     }
                 }
             });
         }
 
-        function triggerAlarm(med, timeStr, logKey) {
-            const patient = patients.find(p => p.id === med.patientId) || { name: 'Paciente', bed: '-' };
+        function triggerAlarm(med, timeStr, key) {
+            const pat = patients.find(p => p.id === med.patientId) || { name: 'Paciente' };
+            activeAlarmData = { logKey: key, sound: med.sound || 'chime' };
 
-            activeAlarmData = {
-                medId: med.id,
-                time: timeStr,
-                logKey: logKey,
-                sound: med.sound || 'chime'
-            };
-
-            // 1. Notificação nativa em segundo plano
             if ("Notification" in window && Notification.permission === "granted") {
-                new Notification(`HORA DA MEDICAÇÃO: ${patient.name}`, {
-                    body: `${med.name} (${med.dosage || 'Sem dose'}) - Horário: ${timeStr}`,
-                    icon: 'https://cdn-icons-png.flaticon.com/512/3063/3063822.png'
-                });
+                new Notification(`HORA DA MEDICAÇÃO: ${pat.name}`, { body: `${med.name} - ${timeStr}` });
             }
 
-            // 2. Alerta visual na tela
-            document.getElementById('alarmPatientName').innerText = patient.name;
-            document.getElementById('alarmBed').innerText = `Leito / Quarto: ${patient.bed || 'Não informado'}`;
+            document.getElementById('alarmPatientName').innerText = pat.name;
+            document.getElementById('alarmBed').innerText = `Leito: ${pat.bed || 'N/A'}`;
             document.getElementById('alarmMedName').innerText = med.name;
-            document.getElementById('alarmDosage').innerText = `Dose: ${med.dosage || 'Conforme indicação'}`;
+            document.getElementById('alarmDosage').innerText = `Dose: ${med.dosage || 'Padrão'}`;
             document.getElementById('alarmTime').innerText = `Horário: ${timeStr}`;
 
             document.getElementById('alarmModal').classList.remove('hidden');
 
-            // 3. Alerta sonoro contínuo com o tom selecionado
-            startContinuousAlarm(med.sound || 'chime');
+            playAudioTone(med.sound || 'chime');
+            alarmInterval = setInterval(() => playAudioTone(med.sound || 'chime'), 3000);
         }
 
-        function dismissAlarm(markAsConsumed = false) {
-            stopContinuousAlarm();
+        function dismissAlarm(consumed) {
+            if (alarmInterval) clearInterval(alarmInterval);
             document.getElementById('alarmModal').classList.add('hidden');
-
-            if (activeAlarmData && markAsConsumed) {
+            if (activeAlarmData && consumed) {
                 logs[activeAlarmData.logKey] = 'consumido';
                 saveData();
                 renderDailySchedule();
             }
-
             activeAlarmData = null;
         }
     </script>
