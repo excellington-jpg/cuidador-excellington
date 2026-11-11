@@ -50,7 +50,6 @@
             0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
             100% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
         }
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -248,23 +247,25 @@
 
     <!-- ================= MODALS ================= -->
 
-    <!-- 1. AUTH / USER REGISTRATION MODAL (AJUSTADO PADRÃO EXCELLINGTON) -->
+    <!-- 1. AUTH / USER REGISTRATION MODAL (PADRÃO EXCELLINGTON) -->
     <div id="authModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-emerald-100">
-            <div class="text-center mb-6">
-                <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto mb-2 text-xl font-bold">
-                    <i class="fa-solid fa-user-check"></i>
+            <div class="flex items-center gap-3 border-b border-slate-100 pb-3 mb-4">
+                <div class="p-2.5 bg-emerald-100 text-emerald-800 rounded-xl">
+                    <i class="fa-solid fa-user-check text-xl"></i>
                 </div>
-                <h2 class="text-xl font-bold text-slate-800">Identificação do Usuário</h2>
-                <p class="text-xs text-slate-500 mt-1">Informe seu nome ou empresa para liberar o aplicativo.</p>
+                <div>
+                    <h3 class="text-base font-bold text-slate-800">Identificação do Usuário</h3>
+                    <p class="text-xs text-slate-500">Informe seu nome ou empresa para liberar o aplicativo.</p>
+                </div>
             </div>
             <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nome Completo / Responsável *</label>
-                    <input type="text" id="authName" required class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Ex: Wellington Silva">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nome do Usuário *</label>
+                    <input type="text" id="authName" required class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Ex: Wellington Silva">
                 </div>
                 <div class="flex gap-2 pt-2">
-                    <button id="btnCancelAuth" type="button" onclick="closeAuthModal()" class="hidden w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition text-sm">
+                    <button id="btnCancelAuth" type="button" onclick="closeAuthModal()" class="hidden w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition text-xs">
                         Cancelar
                     </button>
                     <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition text-sm shadow">
@@ -290,10 +291,10 @@
                 <p>4. Os desenvolvedores e a marca Excellington não se responsabilizam por falhas na administração de medicamentos decorrentes de dispositivos desligados, sem bateria ou sem áudio ativado.</p>
             </div>
             <div class="flex items-center space-x-2 mb-4">
-                <input type="checkbox" id="acceptTermsCheck" class="rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4">
-                <label for="acceptTermsCheck" class="text-xs font-medium text-slate-700">Li e concordo com os termos de responsabilidade.</label>
+                <input type="checkbox" id="acceptTermsCheck" onchange="toggleTermsButton()" class="rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4 cursor-pointer">
+                <label for="acceptTermsCheck" class="text-xs font-medium text-slate-700 cursor-pointer">Li e concordo com os termos de responsabilidade.</label>
             </div>
-            <button onclick="confirmTerms()" id="btnAcceptTerms" disabled class="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-bold py-2.5 rounded-xl transition text-sm shadow">
+            <button onclick="confirmTerms()" id="btnAcceptTerms" disabled class="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-bold py-2.5 rounded-xl transition text-sm shadow cursor-pointer disabled:cursor-not-allowed">
                 Aceitar e Prosseguir
             </button>
         </div>
@@ -327,7 +328,7 @@
             <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-center text-xs space-y-1.5">
                 <p class="text-slate-600">Chave Pix para doação:</p>
                 <p class="font-bold text-emerald-900 text-sm">16250510850</p>
-                <button onclick="copyPix()" class="w-full py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-xs transition">
+                <button onclick="copyPix()" class="w-full py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-xs transition cursor-pointer">
                     Copiar Chave Pix
                 </button>
             </div>
@@ -338,10 +339,10 @@
             </div>
 
             <div class="flex gap-2 pt-2">
-                <button onclick="closeLicenseModalIfValid()" class="w-1/2 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
+                <button onclick="closeLicenseModalIfValid()" class="w-1/2 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition cursor-pointer">
                     Fechar / Continuar
                 </button>
-                <button onclick="validateActivationCode()" class="w-1/2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition">
+                <button onclick="validateActivationCode()" class="w-1/2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition cursor-pointer">
                     Ativar Aplicativo
                 </button>
             </div>
@@ -523,12 +524,11 @@
             termsAccepted: false,
             patients: [],
             medications: [],
-            logs: [], // { date: 'YYYY-MM-DD', medId, time, consumed: true/false }
+            logs: [],
             selectedPatientId: 'ALL',
             currentAlarmTarget: null
         };
 
-        // AUDIO SYNTHESIZER FOR ALARM (Web Audio API COM 5 TOQUES)
         let audioCtx = null;
         let alarmInterval = null;
 
@@ -545,7 +545,6 @@
                     const now = audioCtx.currentTime;
 
                     if (soundType === 'alarm') {
-                        // Despertador Digital (Beep duplo agudo)
                         [0, 0.2].forEach(delay => {
                             const osc = audioCtx.createOscillator();
                             const gain = audioCtx.createGain();
@@ -559,7 +558,6 @@
                             osc.stop(now + delay + 0.1);
                         });
                     } else if (soundType === 'melody') {
-                        // Melodia Médica
                         [523.25, 659.25, 783.99].forEach((freq, idx) => {
                             const osc = audioCtx.createOscillator();
                             const gain = audioCtx.createGain();
@@ -573,7 +571,6 @@
                             osc.stop(now + (idx * 0.12) + 0.3);
                         });
                     } else if (soundType === 'urgent') {
-                        // Alerta Urgente (Pulso rápido)
                         [0, 0.15].forEach(delay => {
                             const osc = audioCtx.createOscillator();
                             const gain = audioCtx.createGain();
@@ -587,7 +584,6 @@
                             osc.stop(now + delay + 0.08);
                         });
                     } else if (soundType === 'zen') {
-                        // Zen / Relaxante
                         const osc = audioCtx.createOscillator();
                         const gain = audioCtx.createGain();
                         osc.type = 'sine';
@@ -599,7 +595,6 @@
                         osc.start(now);
                         osc.stop(now + 1.2);
                     } else {
-                        // Sintetizador Padrão Excellington (Original)
                         const osc = audioCtx.createOscillator();
                         const gain = audioCtx.createGain();
                         osc.type = 'sine';
@@ -637,7 +632,6 @@
             }
         }
 
-        // INITIALIZATION
         window.onload = function () {
             loadDataFromStorage();
             checkStandardModals();
@@ -646,7 +640,18 @@
         };
 
         function loadDataFromStorage() {
-            appState.user = (localStorage.getItem(STORAGE_KEY_USER) || '').trim();
+            const rawUser = localStorage.getItem(STORAGE_KEY_USER);
+            if (rawUser) {
+                try {
+                    const parsed = JSON.parse(rawUser);
+                    appState.user = typeof parsed === 'object' && parsed !== null ? (parsed.name || String(parsed)) : String(rawUser);
+                } catch (e) {
+                    appState.user = String(rawUser).replace(/["{}]/g, '');
+                }
+            } else {
+                appState.user = null;
+            }
+
             appState.termsAccepted = JSON.parse(localStorage.getItem(STORAGE_KEY_TERMS)) || false;
             appState.patients = JSON.parse(localStorage.getItem(STORAGE_KEY_PATIENTS)) || [
                 { id: '1', name: 'Dona Maria Oliveira', age: 78, room: 'Quarto 101', notes: 'Hipertensa e Diabética' }
@@ -665,7 +670,6 @@
             localStorage.setItem(STORAGE_KEY_LOGS, JSON.stringify(appState.logs));
         }
 
-        // CONTROLADORIA DE LICENÇA EXCELLINGTON
         function readStoredExpiration() {
             const raw = localStorage.getItem(STORAGE_KEY_EXPIRY);
             if (!raw) return null;
@@ -677,9 +681,7 @@
             return Number.isFinite(parsed) ? parsed : null;
         }
 
-        // EXCELINGTON STANDARD MODAL CHECKS
         function checkStandardModals() {
-            // Check Auth
             if (!appState.user) {
                 openAuthModal(false);
                 return;
@@ -687,19 +689,13 @@
             document.getElementById('authModal').classList.add('hidden');
             document.getElementById('userNameDisplay').textContent = appState.user;
 
-            // Check Terms
             if (!appState.termsAccepted) {
                 document.getElementById('termsModal').classList.remove('hidden');
-                const checkbox = document.getElementById('acceptTermsCheck');
-                const btn = document.getElementById('btnAcceptTerms');
-                checkbox.onchange = function() {
-                    btn.disabled = !this.checked;
-                };
+                toggleTermsButton();
                 return;
             }
             document.getElementById('termsModal').classList.add('hidden');
 
-            // License Check
             const storedExpiration = readStoredExpiration();
             if (!storedExpiration) {
                 const initExp = new Date();
@@ -708,6 +704,14 @@
                 localStorage.setItem(STORAGE_KEY_EXPIRY, initExp.getTime().toString());
             } else if (Date.now() > storedExpiration) {
                 openLicenseModal();
+            }
+        }
+
+        function toggleTermsButton() {
+            const checkbox = document.getElementById('acceptTermsCheck');
+            const btn = document.getElementById('btnAcceptTerms');
+            if (checkbox && btn) {
+                btn.disabled = !checkbox.checked;
             }
         }
 
@@ -738,9 +742,12 @@
         }
 
         function confirmTerms() {
-            appState.termsAccepted = true;
-            saveDataToStorage();
-            checkStandardModals();
+            const checkbox = document.getElementById('acceptTermsCheck');
+            if (checkbox && checkbox.checked) {
+                appState.termsAccepted = true;
+                saveDataToStorage();
+                checkStandardModals();
+            }
         }
 
         function openLicenseModal() {
@@ -815,6 +822,7 @@
 
         function openTermsModal() {
             document.getElementById('termsModal').classList.remove('hidden');
+            toggleTermsButton();
         }
 
         // PATIENTS MANAGEMENT
@@ -906,13 +914,11 @@
                     document.getElementById('medDosage').value = med.dosage;
                     document.getElementById('medSoundSelect').value = med.sound || 'chime';
 
-                    // Days
                     const dayCheckboxes = document.querySelectorAll('.day-check');
                     dayCheckboxes.forEach(cb => {
                         cb.checked = med.days.includes(parseInt(cb.value));
                     });
 
-                    // Times
                     med.times.forEach(t => addTimeInput(t));
                     document.getElementById('medModalTitle').textContent = "Editar Medicamento";
                 }
@@ -988,7 +994,6 @@
             }
         }
 
-        // RENDERING VIEWS
         function renderAll() {
             renderPatientsList();
             renderActivePatientHeader();
@@ -1179,7 +1184,6 @@
             container.innerHTML = html;
         }
 
-        // STATUS TOGGLING & LOGS
         function toggleMedicationStatus(medId, time, consumed) {
             const todayStr = new Date().toISOString().split('T')[0];
 
@@ -1199,7 +1203,6 @@
             renderTodaySchedule();
         }
 
-        // BACKGROUND CLOCK & ALARM ENGINE
         let firedAlarmsToday = new Set();
 
         function startClockAndAlarmEngine() {
@@ -1242,16 +1245,13 @@
                 dosage: med.dosage
             };
 
-            // Play Sound com o toque selecionado
             playAlarmSound(med.sound || 'chime');
 
-            // Show Popup Modal
             document.getElementById('alarmPatientName').textContent = patientName;
             document.getElementById('alarmMedName').textContent = med.name;
             document.getElementById('alarmDosage').textContent = `Dose: ${med.dosage} (${time})`;
             document.getElementById('alarmPopupModal').classList.remove('hidden');
 
-            // Send System Web Notification (Works in background)
             if ("Notification" in window && Notification.permission === "granted") {
                 new Notification(`HORA DA MEDICAÇÃO: ${patientName}`, {
                     body: `${med.name} - ${med.dosage} às ${time}`,
