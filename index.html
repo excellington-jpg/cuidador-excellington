@@ -254,7 +254,7 @@
     <!-- FOOTER -->
     <footer class="bg-white border-t border-slate-200 py-4 mt-8">
         <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
-            <p>Cuidador Excellington · Saúde e Bem-Estar 100% Integrados</p>
+            <p>© Excellington Software - Todos os direitos reservados.</p>
             <div class="flex space-x-4">
                 <a href="#" onclick="openTermsModal(); return false;" class="text-emerald-700 hover:underline">Termos de Uso</a>
                 <a href="#" onclick="openLicenseModal(); return false;" class="text-emerald-700 hover:underline">Licença & Ativação</a>
@@ -1119,9 +1119,9 @@
             items.sort((a, b) => a.time.localeCompare(b.time));
 
             const pendingCount = items.filter(i => !i.consumed).length;
-            const takenCount = items.filter(i => !i.consumed === false && i.consumed).length;
+            const takenCount = items.filter(i => i.consumed).length;
             document.getElementById('statPending').textContent = pendingCount;
-            document.getElementById('statTaken').textContent = items.filter(i => i.consumed).length;
+            document.getElementById('statTaken').textContent = takenCount;
 
             if (items.length === 0) {
                 tbody.innerHTML = '';
@@ -1241,15 +1241,20 @@
         let lastCheckedDateStr = new Date().toISOString().split('T')[0];
 
         function startClockAndAlarmEngine() {
+            // Motor resiliente com verificação baseada no relógio real do sistema operacional
             setInterval(() => {
                 const now = new Date();
                 const clockStr = now.toTimeString().split(' ')[0];
-                document.getElementById('currentClock').textContent = clockStr;
+                const clockElement = document.getElementById('currentClock');
+                if (clockElement) {
+                    clockElement.textContent = clockStr;
+                }
 
                 const currentHHMM = clockStr.substring(0, 5);
                 const todayStr = now.toISOString().split('T')[0];
                 const todayDayNum = now.getDay();
 
+                // Recalcula e atualiza automaticamente se virar o dia
                 if (todayStr !== lastCheckedDateStr) {
                     lastCheckedDateStr = todayStr;
                     firedAlarmsToday.clear();
