@@ -193,16 +193,24 @@
                     </div>
                 </div>
 
-                <!-- Schedule Checklist for Today -->
+                <!-- Schedule Checklist with Date Selector -->
                 <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-5">
-                    <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b border-slate-100 pb-3 gap-3">
                         <div>
                             <h3 class="font-bold text-slate-800 text-md flex items-center gap-2">
                                 <i class="fa-solid fa-calendar-check text-emerald-600"></i>
-                                Horários de Hoje (<span id="currentDayText"></span>)
+                                Cronograma de Medicamentos
                             </h3>
+                            <p class="text-xs text-slate-500 mt-0.5"><span id="currentDayText">Carregando...</span></p>
                         </div>
-                        <span id="currentClock" class="text-xs font-mono bg-slate-100 px-2.5 py-1 rounded-md text-slate-600 font-semibold">00:00:00</span>
+                        <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                            <!-- Seletor de Data -->
+                            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1">
+                                <i class="fa-solid fa-calendar text-emerald-600 text-xs"></i>
+                                <input type="date" id="selectedDateInput" onchange="onDateInputChange(this.value)" class="bg-transparent text-xs font-semibold text-slate-700 focus:outline-none cursor-pointer">
+                            </div>
+                            <span id="currentClock" class="text-xs font-mono bg-slate-100 px-2.5 py-1.5 rounded-lg text-slate-600 font-semibold">00:00:00</span>
+                        </div>
                     </div>
 
                     <!-- Daily Checklist Table -->
@@ -223,7 +231,7 @@
                         </table>
                         <div id="emptyScheduleState" class="hidden text-center py-8 text-slate-400">
                             <i class="fa-solid fa-capsules text-3xl mb-2 text-slate-300"></i>
-                            <p class="text-xs">Nenhum medicamento agendado para o dia de hoje.</p>
+                            <p class="text-xs">Nenhum medicamento agendado para esta data.</p>
                         </div>
                     </div>
                 </div>
@@ -246,7 +254,7 @@
     <!-- FOOTER -->
     <footer class="bg-white border-t border-slate-200 py-4 mt-8">
         <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
-            <p>Cuidador Excellington · Saúde e Bem-Estar 100% Integrados</p>
+            <p>© Excellington Software - Todos os direitos reservados.</p>
             <div class="flex space-x-4">
                 <a href="#" onclick="openTermsModal(); return false;" class="text-emerald-700 hover:underline">Termos de Uso</a>
                 <a href="#" onclick="openLicenseModal(); return false;" class="text-emerald-700 hover:underline">Licença & Ativação</a>
@@ -285,7 +293,7 @@
         </div>
     </div>
 
-    <!-- 2. TERMS OF USE MODAL (ATUALIZADO COM ITEM 5 SOBRE ABA ABERTA) -->
+    <!-- 2. TERMS OF USE MODAL -->
     <div id="termsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-emerald-100 flex flex-col max-h-[85vh]">
             <div class="flex items-center space-x-3 mb-4 text-emerald-800">
@@ -535,6 +543,7 @@
             medications: [],
             logs: [],
             selectedPatientId: 'ALL',
+            selectedDate: new Date().toISOString().split('T')[0],
             currentAlarmTarget: null
         };
 
@@ -1059,13 +1068,29 @@
             }
         }
 
-        const daysMap = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+        function onDateInputChange(val) {
+            if (val) {
+                appState.selectedDate = val;
+                renderTodaySchedule();
+            }
+        }
 
         function renderTodaySchedule() {
-            const now = new Date();
-            const todayDayNum = now.getDay();
-            const todayStr = now.toISOString().split('T')[0];
-            document.getElementById('currentDayText').textContent = daysMap[todayDayNum];
+            if (!appState.selectedDate) {
+                appState.selectedDate = new Date().toISOString().split('T')[0];
+            }
+
+            const dateInput = document.getElementById('selectedDateInput');
+            if (dateInput && dateInput.value !== appState.selectedDate) {
+                dateInput.value = appState.selectedDate;
+            }
+
+            const [year, month, day] = appState.selectedDate.split('-').map(Number);
+            const targetDateObj = new Date(year, month - 1, day);
+            const targetDayNum = targetDateObj.getDay();
+            
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDayText').textContent = targetDateObj.toLocaleDateString('pt-BR', options);
 
             const tbody = document.getElementById('todayScheduleTable');
             const emptyState = document.getElementById('emptyScheduleState');
@@ -1075,10 +1100,10 @@
             appState.medications.forEach(med => {
                 if (appState.selectedPatientId !== 'ALL' && med.patientId !== appState.selectedPatientId) return;
 
-                if (med.days.includes(todayDayNum)) {
+                if (med.days.includes(targetDayNum)) {
                     const patient = appState.patients.find(p => p.id === med.patientId);
                     med.times.forEach(time => {
-                        const isTaken = appState.logs.some(l => l.date === todayStr && l.medId === med.id && l.time === time && l.consumed);
+                        const isTaken = appState.logs.some(l => l.date === appState.selectedDate && l.medId === med.id && l.time === time && l.consumed);
                         items.push({
                             medId: med.id,
                             patientName: patient ? patient.name : 'Desconhecido',
@@ -1094,9 +1119,9 @@
             items.sort((a, b) => a.time.localeCompare(b.time));
 
             const pendingCount = items.filter(i => !i.consumed).length;
-            const takenCount = items.filter(i => i.consumed).length;
+            const takenCount = items.filter(i => !i.consumed === false && i.consumed).length;
             document.getElementById('statPending').textContent = pendingCount;
-            document.getElementById('statTaken').textContent = takenCount;
+            document.getElementById('statTaken').textContent = items.filter(i => i.consumed).length;
 
             if (items.length === 0) {
                 tbody.innerHTML = '';
@@ -1194,13 +1219,13 @@
         }
 
         function toggleMedicationStatus(medId, time, consumed) {
-            const todayStr = new Date().toISOString().split('T')[0];
+            const targetDateStr = appState.selectedDate || new Date().toISOString().split('T')[0];
 
-            appState.logs = appState.logs.filter(l => !(l.date === todayStr && l.medId === medId && l.time === time));
+            appState.logs = appState.logs.filter(l => !(l.date === targetDateStr && l.medId === medId && l.time === time));
 
             if (consumed) {
                 appState.logs.push({
-                    date: todayStr,
+                    date: targetDateStr,
                     medId: medId,
                     time: time,
                     consumed: true,
@@ -1213,6 +1238,7 @@
         }
 
         let firedAlarmsToday = new Set();
+        let lastCheckedDateStr = new Date().toISOString().split('T')[0];
 
         function startClockAndAlarmEngine() {
             setInterval(() => {
@@ -1223,6 +1249,15 @@
                 const currentHHMM = clockStr.substring(0, 5);
                 const todayStr = now.toISOString().split('T')[0];
                 const todayDayNum = now.getDay();
+
+                if (todayStr !== lastCheckedDateStr) {
+                    lastCheckedDateStr = todayStr;
+                    firedAlarmsToday.clear();
+                    if (appState.selectedDate === lastCheckedDateStr || !appState.selectedDate) {
+                        appState.selectedDate = todayStr;
+                        renderTodaySchedule();
+                    }
+                }
 
                 appState.medications.forEach(med => {
                     if (med.days.includes(todayDayNum)) {
