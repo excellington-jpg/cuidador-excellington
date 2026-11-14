@@ -549,12 +549,42 @@
 
         let audioCtx = null;
         let alarmInterval = null;
+        let keepAliveTimer = null;
 
-        function playAlarmSound(soundType = 'chime') {
+        // Mecanismo Anti-Suspensão (Keep-Alive Invisible Audio Context Loop)
+        // Mantém o navegador "acordado" simulando um fluxo de áudio mudo contínuo em segundo plano
+        function initBackgroundKeepAlive() {
             try {
                 if (!audioCtx) {
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                if (!keepAliveTimer) {
+                    keepAliveTimer = setInterval(() => {
+                        if (audioCtx) {
+                            if (audioCtx.state === 'suspended') {
+                                audioCtx.resume();
+                            }
+                            const oscillator = audioCtx.createOscillator();
+                            const gainNode = audioCtx.createGain();
+                            gainNode.gain.value = 0.00001; // Praticamente inaudível (silencioso)
+                            oscillator.connect(gainNode);
+                            gainNode.connect(audioCtx.destination);
+                            oscillator.start();
+                            oscillator.stop(audioCtx.currentTime + 0.05);
+                        }
+                    }, 15000); // A cada 15 segundos envia um pulso invisível para burlar a economia de energia
+                }
+            } catch (e) {
+                console.log("Keep-alive init notice:", e);
+            }
+        }
+
+        function playAlarmSound(soundType = 'chime') {
+            try {
+                initBackgroundKeepAlive();
                 if (audioCtx.state === 'suspended') {
                     audioCtx.resume();
                 }
@@ -655,7 +685,13 @@
             checkStandardModals();
             renderAll();
             startClockAndAlarmEngine();
+            initBackgroundKeepAlive();
         };
+
+        // Garante ativação do audio context ao primeiro toque ou interação na página
+        window.addEventListener('pointerdown', () => {
+            initBackgroundKeepAlive();
+        }, { once: true });
 
         function loadDataFromStorage() {
             const rawUser = localStorage.getItem(STORAGE_KEY_USER);
